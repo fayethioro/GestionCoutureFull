@@ -11,7 +11,7 @@ class UpdateCategoriesRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,18 @@ class UpdateCategoriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "libelle" => "required|string|min:3|unique:categories"
         ];
     }
+
+    public function messages()
+    {
+         return [
+           "libelle.required" => "Le champ libelle est obligatoire",
+           "libelle.string" => "Le champ libelle doit etre un chaine de caractere",
+           "libelle.min" => "Le champ libelle doit avoir au moins 3 caratéres",
+           "libelle" => "sometimes|required|string|min:3"
+         ];
+    }
+
 }
