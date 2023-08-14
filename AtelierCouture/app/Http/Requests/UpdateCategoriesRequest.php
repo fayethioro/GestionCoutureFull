@@ -32,7 +32,7 @@ class UpdateCategoriesRequest extends FormRequest
            "libelle.required" => "Le champ libelle est obligatoire",
            "libelle.string" => "Le champ libelle doit etre un chaine de caractere",
            "libelle.min" => "Le champ libelle doit avoir au moins 3 caratéres",
-           "libelle" => "sometimes|required|string|min:3"
+           "libelle.unique" => "Le libelle existe deja"
          ];
     }
 

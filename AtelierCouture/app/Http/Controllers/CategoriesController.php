@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categories;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\CategoriesResource;
+use App\Http\Resources\CategoriesCollection;
 use App\Http\Requests\StoreCategoriesRequest;
 use App\Http\Requests\UpdateCategoriesRequest;
-use App\Http\Resources\CategoriesResource;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CategoriesController extends Controller
@@ -17,21 +18,20 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = Categories::all();
+        $categories = Categories::all()->sort();
         return new CategoriesResource($categories);
     }
 
     public function pagination(Request $request)
     {
-        $parPage = $request->input('limit', 2);
-        $categories = Categories::paginate($parPage);
-
+        $parPage = $request->input('limit', 3);
+        $categories = Categories::orderBy('created_at', 'desc')->paginate($parPage);
+        
         $currentPage = $categories->currentPage();
-
         return [
             'current_page' => $currentPage,
             // 'data' => $categories->items()
-            new CategoriesResource($categories)
+           "data" => new CategoriesResource($categories)
 
         ];
     }
@@ -104,14 +104,23 @@ class CategoriesController extends Controller
     public function recherche(Request $request)
     {
         $recherche = $request->recherche;
+        // return $recherche;
 
         if(strlen($recherche) < 3){
-            return  "Tu doit saisie au moins 3 caractere";
+            return ["data" => null];
+
+
         }
 
-        $categories = Categories::where('libelle',  $recherche)->get();
+        $categories = Categories::where('libelle',  $recherche)->first();
 
-        return new CategoriesResource($categories);
+        if ($categories) {
+            return ["data" => $categories];
+        }
+
+        return ["data" => null];
+
+
 
     }
 

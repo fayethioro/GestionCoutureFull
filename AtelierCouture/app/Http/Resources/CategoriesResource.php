@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\CategoriesCollection;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoriesResource extends JsonResource
 {
@@ -14,44 +15,42 @@ class CategoriesResource extends JsonResource
      * @return array<string, mixed>
      */
 
-        public function toArray($request)
-        {
-            return [
-                'statusCode' => $this->getStatusCode($request),
-                'message' => $this->getMessage($request),
-                'data' => $this->resource,
-            ];
-        }
+         public function toArray($request)
+         {
+             $message = '';
+             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+     
+             if ($request->isMethod('get')) {
+                 $message = 'Récupération réussie';
+                 $statusCode = Response::HTTP_OK;
+             } elseif ($request->isMethod('post')) {
+                 $message = 'Création réussie';
+                 $statusCode = Response::HTTP_CREATED;
+             } elseif ($request->isMethod('put')) {
+                 $message = 'Mise à jour réussie';
+                 $statusCode = Response::HTTP_OK; 
+             } elseif ($request->isMethod('delete')) {
+                 $message = 'Suppression réussie';
+                 $statusCode = Response::HTTP_NO_CONTENT;
+             }
+     
+             return [
+                 'statusCode' => $statusCode,
+                 'message' => $message,
+                 'data' => $this->resource,
+             ];
+         }
 
-        public function getMessage($request)
-        {
-            if ($request->isMethod('get')) {
-                return 'Récupération réussie';
-            } elseif ($request->isMethod('post')) {
-                return 'Création réussie';
-            } elseif ($request->isMethod('put')) {
-                return 'Mise à jour réussie';
-            } elseif ($request->isMethod('delete')) {
-                return 'Suppression réussie';
-            }
 
-            return "une erreur s'est produit";
-        }
+        
 
-        public function getStatusCode($request)
-        {
-            if ($request->isMethod('get')) {
-                return Response::HTTP_OK;
-            } elseif ($request->isMethod('post')) {
-                return Response::HTTP_CREATED;
-            } elseif ($request->isMethod('put')) {
-                return Response::HTTP_OK; // Peut-être Response::HTTP_NO_CONTENT si la mise à jour ne renvoie pas de contenu.
-            } elseif ($request->isMethod('delete')) {
-                return Response::HTTP_NO_CONTENT;
-            }
+        // public static function collection($resource)
+        // {
+        //     return new CategoriesCollection($resource);
+        // }
+     }
+     
+ 
 
-            return Response::HTTP_INTERNAL_SERVER_ERROR; // Statut par défaut en cas d'opération non reconnue.
-        }
-    }
 
 

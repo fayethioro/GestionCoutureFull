@@ -14,13 +14,12 @@ use App\Http\Controllers\CategoriesController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 
-Route::delete('/categories/destoyMultiple' , [CategoriesController::class , "destroyMultiple"]);
+Route::post('/categories/destoyMultiple' , [CategoriesController::class , "destroyMultiple"]);
 Route::post('/categories/recherche' , [CategoriesController::class , "recherche"]);
 Route::get('/categories/pagination' , [CategoriesController::class , "pagination"]);
 Route::resource('categories', CategoriesController::class);

@@ -32,7 +32,7 @@ class StoreCategoriesRequest extends FormRequest
            "libelle.required" => "Le champ libelle est obligatoire",
            "libelle.string" => "Le champ libelle doit etre un chaine de caractere",
            "libelle.min" => "Le champ libelle doit avoir au moins 3 caratéres",
-           "libelle.unique" => "ce libelle existe dejas de categories",
+           "libelle.unique" => "ce libelle existe deja dans categories",
          ];
     }
 }
