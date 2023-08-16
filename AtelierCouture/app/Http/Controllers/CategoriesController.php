@@ -20,7 +20,11 @@ class CategoriesController extends Controller
     {
         $categories = Categories::all()->sort();
         return new CategoriesResource($categories);
+
+        
     }
+
+    
 
     public function pagination(Request $request)
     {
@@ -28,12 +32,8 @@ class CategoriesController extends Controller
         $categories = Categories::orderBy('created_at', 'desc')->paginate($parPage);
         
         $currentPage = $categories->currentPage();
-        return [
-            'current_page' => $currentPage,
-            // 'data' => $categories->items()
-           "data" => new CategoriesResource($categories)
-
-        ];
+        
+        return CategoriesCollection::formatResponse($request, $categories);
     }
     /**
      * Store a newly created resource in storage.
@@ -49,7 +49,9 @@ class CategoriesController extends Controller
 
         $categorie = Categories::create($request->validated());
 
-        return new CategoriesResource($categorie);
+        // return new CategoriesResource($categorie);
+        return CategoriesCollection::formatResponse($request, $categorie);
+
 
     }
     /**
@@ -62,7 +64,8 @@ class CategoriesController extends Controller
         $category->update($validatedData);
 
 
-        return new CategoriesResource($category);
+        return CategoriesCollection::formatResponse($request, $category);
+
 
     }
 
@@ -89,7 +92,8 @@ class CategoriesController extends Controller
 
         Categories::whereIn('id', $categoryIds)->delete();
 
-        return new CategoriesResource($deletedCategories);
+        return CategoriesCollection::formatResponse($request, $deletedCategories);
+
 
     }
 
@@ -104,12 +108,8 @@ class CategoriesController extends Controller
     public function recherche(Request $request)
     {
         $recherche = $request->recherche;
-        // return $recherche;
-
         if(strlen($recherche) < 3){
             return ["data" => null];
-
-
         }
 
         $categories = Categories::where('libelle',  $recherche)->first();
@@ -119,9 +119,6 @@ class CategoriesController extends Controller
         }
 
         return ["data" => null];
-
-
-
     }
 
 }

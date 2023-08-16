@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\FournisseurController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,3 +26,13 @@ Route::post('/categories/recherche' , [CategoriesController::class , "recherche"
 Route::get('/categories/pagination' , [CategoriesController::class , "pagination"]);
 Route::resource('categories', CategoriesController::class);
 Route::post('/categories/restaure/{category}' , [CategoriesController::class , "restore"])->withTrashed();
+
+Route::get('/articles/pagination' , [ArticleController::class , "paginationArticle"])->name('paginationArticle');
+Route::post('/articles/ajouterArticle' , [ArticleController::class , "ajouterArticleEtApprovisionnement"])->name('ajouterArticle');
+Route::post('/articles/recherche' , [ArticleController::class , "recherche"])->name('rechercheLibelle');
+
+Route::get('/fournisseurs' , [FournisseurController::class , "index"])->name('index');
+Route::post('/fournisseurs/recherche' , [FournisseurController::class , "recherche"])->name('rechercheFournisseurs');
+
+
+

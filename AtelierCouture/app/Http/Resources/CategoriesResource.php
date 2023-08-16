@@ -15,39 +15,17 @@ class CategoriesResource extends JsonResource
      * @return array<string, mixed>
      */
 
-         public function toArray($request)
-         {
-             $message = '';
-             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-     
-             if ($request->isMethod('get')) {
-                 $message = 'Récupération réussie';
-                 $statusCode = Response::HTTP_OK;
-             } elseif ($request->isMethod('post')) {
-                 $message = 'Création réussie';
-                 $statusCode = Response::HTTP_CREATED;
-             } elseif ($request->isMethod('put')) {
-                 $message = 'Mise à jour réussie';
-                 $statusCode = Response::HTTP_OK; 
-             } elseif ($request->isMethod('delete')) {
-                 $message = 'Suppression réussie';
-                 $statusCode = Response::HTTP_NO_CONTENT;
-             }
-     
-             return [
-                 'statusCode' => $statusCode,
-                 'message' => $message,
-                 'data' => $this->resource,
-             ];
-         }
+     public function toArray($request)
+     {
+        return [
+            'id' => $this->id,
+            'libelle' => $this->libelle,
+        ];
+     }
 
 
+    
         
-
-        // public static function collection($resource)
-        // {
-        //     return new CategoriesCollection($resource);
-        // }
      }
      
  

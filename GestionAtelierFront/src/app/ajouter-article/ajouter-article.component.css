@@ -1,0 +1,189 @@
+
+.register{
+    /* background: -webkit-linear-gradient(left, #3931af, #00c6ff); */
+    margin-top: 10px;
+    height: auto;
+    width: 78%;
+}
+.row{
+    width: 97%;
+    margin-left: 5px;
+    margin-top: 10px;
+    height: auto;
+   
+
+}
+.register-left{
+    text-align: center;
+    color: #fff;
+    /* margin-top: 4%; */
+    width: 100%;
+}
+.register-left input{
+    border: none;
+    border-radius: 1.5rem;
+    padding: 2%;
+    width: 60%;
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #383d41;
+    margin-top: 30%;
+    margin-bottom: 3%;
+    cursor: pointer;
+}
+.register-right{
+    background: #f8f9fa;
+    width: 100%;
+    height: 95%;
+    margin-top: 15px;
+    /* background:red */
+    /* border-top-left-radius: 10% 50%;
+    border-bottom-left-radius: 10% 50%; */
+}
+.register-left img{
+    margin-top: 15%;
+    margin-bottom: 5%;
+    width: 25%;
+    -webkit-animation: mover 2s infinite  alternate;
+    animation: mover 1s infinite  alternate;
+}
+.register-left p{
+    font-weight: lighter;
+    padding: 12%;
+    margin-top: -9%;
+}
+.register-form{
+    /* padding: 10px; */
+    margin-top: 10px;
+    height: 90%;
+
+}
+.btnRegister{
+    float: right;
+    /* margin-right: 10px; */
+    
+    border: none;
+    border-radius: 1.5rem;
+    padding: 2%;
+    background: #0062cc;
+    color: #fff;
+    font-weight: 600;
+    width: 50%;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+.register .nav-tabs{
+    margin-top: 3%;
+    border: none;
+    background: #0062cc;
+    border-radius: 1.5rem;
+    width: 28%;
+    float: right;
+}
+.register .nav-tabs .nav-link{
+    padding: 2%;
+    height: 34px;
+    font-weight: 600;
+    color: #fff;
+    /* border-top-right-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem; */
+}
+.register .nav-tabs .nav-link:hover{
+    border: none;
+}
+.register .nav-tabs .nav-link.active{
+    width: 100px;
+    color: #0062cc;
+    border: 2px solid #0062cc;
+    border-top-left-radius: 1.5rem;
+    border-bottom-left-radius: 1.5rem;
+}
+.register-heading{
+
+    text-align: center;
+    color: #495057;
+    height: 100%;
+}
+
+input, select {
+    width: 60%;
+  }
+
+  .photo{
+
+    height: 50%;
+    width: 70%;
+    margin: auto;
+    border-radius:10px;
+  }
+
+  .gauche{
+    width: 65%;
+  }
+  .droite{
+    width: 35%;
+  }
+  li{
+    cursor: pointer;
+    list-style: none;
+  }
+
+  li:hover{
+    background: aliceblue;
+  }
+
+  /* .recupFournisseur input[type="checkbox"] {
+    display: none;
+} */
+
+.recupFournisseur label {
+    cursor: pointer;
+    font-size: 18px;
+}
+
+input[type="checkbox"] {
+   
+    width: 20px;
+    height: 20px;
+    margin-top: 4px;
+    margin-right: 10px;
+   
+}
+.ref input[type="text"], .ref input[type="submit"]  {
+   
+    width: 100%;
+    /* height: 20px; */
+    margin-top: 4px;
+    margin-right: 10px;
+   
+}
+.recupFournisseur input[type="checkbox"]:checked + label::before {
+    border-color: red;
+    background-color: red;
+}
+
+.photo input[type="file"]  {
+   
+    width: 50%;
+    /* height: 20px; */
+    margin-top: 4px;
+    margin-right: 10px;
+   
+}
+/* div{
+    text-align:center;
+    padding:3%;
+    border:thin solid black;
+  } */
+  
+  /* input[type="file"]{
+    display: none;
+  } */
+
+  label{
+    cursor:pointer;
+  }
+  
+  #imageName{
+    color:green;
+  }

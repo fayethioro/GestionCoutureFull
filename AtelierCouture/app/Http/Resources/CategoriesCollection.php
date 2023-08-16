@@ -13,43 +13,38 @@ class CategoriesCollection extends ResourceCollection
      *
      * @return array<int|string, mixed>
      */
-    
-        public function with($request)
-        {
-            $message = $this->getMessage($request);
-            $statusCode = $this->getStatusCode($request);
-    
-            return [
-                'statusCode' => $statusCode,
-                'message' => $message,
-            ];
-        }
-    
-        protected function getMessage($request)
-        {
-            $messages = [
-                'GET' => 'Récupération réussie',
-                'POST' => 'Création réussie',
-                'PUT' => 'Mise à jour réussie',
-                'DELETE' => 'Suppression réussie',
-            ];
-    
-            $method = strtoupper($request->getMethod());
-    
-            return $messages[$method] ?? 'Opération réussie';
-        }
-        protected function getStatusCode($request)
-        {
-            $statusCodes = [
-                'GET' => Response::HTTP_OK,
-                'POST' => Response::HTTP_CREATED,
-                'PUT' => Response::HTTP_OK,
-                'DELETE' => Response::HTTP_NO_CONTENT,
-            ];
-    
-            $method = strtoupper($request->getMethod());
-    
-            return $statusCodes[$method] ?? Response::HTTP_OK;
-        }
-    
+   
+     public function toArray($request)
+     {
+         return [
+             'id' => $this->id,
+             'libelle' => $this->libelle,
+         ];
+     }
+ 
+     public static function formatResponse($request, $data)
+     {
+         $message = self::getMessage($request);
+ 
+         return [
+             'success' => true,
+             'message' => $message,
+             'data' => $data,
+         ];
+     }
+ 
+     private static function getMessage($request)
+     {
+         if ($request->isMethod('get')) {
+             return 'Récupération réussie';
+         } elseif ($request->isMethod('post')) {
+             return 'Création réussie';
+         } elseif ($request->isMethod('put')) {
+             return 'Mise à jour réussie';
+         } elseif ($request->isMethod('delete')) {
+             return 'Suppression réussie';
+         } else {
+             return 'Opération réussie';
+         }
+     } 
 }

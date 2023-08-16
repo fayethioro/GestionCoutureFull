@@ -10,13 +10,14 @@ import { FormBuilder, FormGroup, Validators } from "@angular/forms";
   styleUrls: ["./categories.component.css"],
 })
 export class CategoriesComponent {
-  newCategorie!: Categories[];
+  // newCategorie!: Categories[];
   tabSelect: number[] = [];
 
   ok :boolean = false
   currentPage: number = 1;
   totalPage!: number;
 
+  newCategorie! : Categories[];
   categorieForm!: FormGroup;
 
   ajout: boolean = false;
@@ -28,7 +29,6 @@ export class CategoriesComponent {
   selectedCategorie: Categories | null = null;
   categorieIdUpdate: number | null = null;
 
-  categories: any[] = [];
 
   rechercheEffectuee!: boolean ;
 
@@ -47,11 +47,15 @@ export class CategoriesComponent {
     this.loadCategories();
   }
 
+
+
   loadCategories(): void {
-    this._categoriesservice.getCategoriesPagination(this.currentPage).subscribe((response) => {
-        this.newCategorie = response.data.data.data;
-        this.totalPage = response.data.data.total / 3;
-        this.currentPage = response.current_page;
+    this._categoriesservice.getPagination(this.currentPage).subscribe((response) => {
+        console.log(response.data.data);
+        
+      this.newCategorie = response.data.data;
+      //   // this.totalPage = response.data.data.total / 3;
+        this.currentPage = response.data.current_page;
       });
      
   }
@@ -72,6 +76,8 @@ export class CategoriesComponent {
     this.loadCategories();
   }
 
+
+
   goToPage(page: number): void {
     this.currentPage = page;
     this.loadCategories();
@@ -79,18 +85,13 @@ export class CategoriesComponent {
 
   addCategorie() {
     const libelleValue = this.categorieForm.value.libelle;
-    console.log(libelleValue);
-    console.log(this.categorieForm.value);
     this._categoriesservice.addCategorieForm(this.categorieForm.value).subscribe(Response => {
           alert("Categorie ajouter avec succes")
-          console.log(Response);
           this.categorieForm.get('libelle')!.setValue("");
           this.loadCategories()
     },
       error => {
         this.errorMessage = error.error.message
-        console.log(error.error);
-        console.log(this.errorMessage)
       }
     );
   }
@@ -109,29 +110,29 @@ export class CategoriesComponent {
         this.tabSelect.push(id); 
         console.log(this.tabSelect);
       } else {
+        this.selectAll = false
         const index = this.tabSelect.indexOf(id);
         if (index !== -1) {
           this.tabSelect.splice(index, 1);
           console.log(this.tabSelect);
         }
       }
-      if (this.tabSelect.length === 0) {
-        this.selectAll = false
-        console.log("vide");
-      }
     }
+    if (this.tabSelect.length === this.newCategorie.length) {
+      this.selectAll = true
+    }
+    
     this.buttonDelete = this.tabSelect.length !== 0; 
   }
   
   editCategorie(libelle: string, id: number) {
     this.selectedCategorie = { id: id, libelle: libelle };
     this.categorieForm.patchValue({ libelle: libelle }); 
+    this.ajout= false
   }
  
   rechercheCategorie() {
     const libelleValue = this.categorieForm.value.libelle;
-    console.log(libelleValue);
-    console.log(this.categorieForm.value);
     this._categoriesservice.rechercheCategorieForm(libelleValue).subscribe(Response => {
         console.log(Response.data);
         if (Response.data === null) {
@@ -156,8 +157,8 @@ export class CategoriesComponent {
           
           alert('Catégorie mise à jour avec succès');
           this.selectedCategorie = null; 
-          
           this.categorieForm.patchValue({ libelle: '' }); 
+          this.loadCategories();
 
         },
       error => {
@@ -175,6 +176,7 @@ export class CategoriesComponent {
   toggleSelectAll() {
       this.selectAll = !this.selectAll
     console.log(this.selectAll);
+    this.tabSelect =[]
     if (this.selectAll) {
       this.tabSelect = this.newCategorie.map(categorie => categorie.id);
       console.log(this.tabSelect);

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Categories } from './categories.model';
+import { CatResponse, Categories } from './categories.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,11 +16,7 @@ export class CategoriesServiceService {
       return this._http.get<Categories>(this.host)
   }
 
-  getCategoriesPagination(limit: number): Observable<any> {
-    const url = `${this.host}/pagination?page=${limit}`;
-    return this._http.get(url);
-  }
-
+ 
   addCategorieForm(newCategorie :Categories):Observable<Categories>{
 
     const httpOptions = {
@@ -29,6 +25,16 @@ export class CategoriesServiceService {
         'Accept':   'application/json'
       })}
        return this._http.post<Categories>(this.host , newCategorie  , httpOptions )   
+  }
+
+  getCategoriesPagination(limit: number): Observable<any> {
+    const url = `${this.host}/pagination?page=${limit}`;
+    return this._http.get<Categories>(url);
+  }
+
+  getPagination(limit: number): Observable<CatResponse<Categories>> {
+    const url = `${this.host}/pagination?page=${limit}`;
+    return this._http.get<CatResponse<Categories>>(url);
   }
 
   deleteCategorieSelect(tabSelect : number[]): Observable<Categories>{
