@@ -9,7 +9,8 @@ import { AppComponent } from './app.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ArticleComponent } from './article/article.component';
-import { AjouterArticleComponent } from './ajouter-article/ajouter-article.component';
+import { AjouterArticleComponent } from './article/ajouter-article/ajouter-article.component';
+
 
 @NgModule({
   declarations: [

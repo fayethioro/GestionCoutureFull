@@ -3,6 +3,8 @@ export interface RestResponse <T> {
     data : T[];
     links: Links[],
     message: string;
+    fournisseurs : Fournisseur[],
+    categories : Categories[]
 }
 
 export interface Links {
