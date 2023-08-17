@@ -16,11 +16,13 @@ export interface Links {
 export interface Article {
     id?: number;
     libelle: string;
-    reference: string;
-    stock_total: number;
-    prix_total: number;
-    caterigorie: number; 
-    fournisseur? : number
+    reference?: string;
+    prix:number;
+    stock:number;
+    stock_total?: number;
+    prix_total?: number;
+    categories_id: number; 
+    fournisseur_id? : number[]
     data?:object
   }
 

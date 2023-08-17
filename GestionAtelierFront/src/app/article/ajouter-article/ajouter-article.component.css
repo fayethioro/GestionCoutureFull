@@ -187,3 +187,54 @@ input[type="checkbox"] {
   #imageName{
     color:green;
   }
+
+  .showSpan{
+    /* background: red; */
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 60%;
+    height: 38px;
+    border-radius: 8px;
+    border:solid 0.5px rgb(169, 168, 168);
+    padding: 2px;
+    color: gray;
+
+
+  }
+
+  /* ==========================================
+    FOR DEMO PURPOSE
+  ========================================== */
+.holder {
+    background: #f0efe9;
+    min-height: auto;
+  }
+  
+  .rounded {
+    border-radius: 10px !important;
+  }
+  
+  .text-gray {
+    color: #aaa;
+  }
+  
+  input:checked + label {
+    text-decoration: line-through;
+    color: #adb5bd;
+  }
+  
+  label {
+    cursor: pointer;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+  .form-check:hover{
+    background: aliceblue;
+  }
+  .card-body {
+    height: 16px !important;
+    margin-bottom: 3px !important;
+  }

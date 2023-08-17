@@ -1,22 +1,23 @@
-import { Component } from '@angular/core';
-import { CategoriesServiceService } from '../../categories-service.service';
+import { Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { Categories } from '../../categories.model';
-import { ArticleuServiceService } from '../../shared/service/articleu-service.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Article, Fournisseur } from '../../shared/interface/rest-response';
-import { FournisseurServiceService } from '../../shared/service/fournisseur-service.service';
+
 
 @Component({
   selector: 'app-ajouter-article',
   templateUrl: './ajouter-article.component.html',
   styleUrls: ['./ajouter-article.component.css'],
 })
-export class AjouterArticleComponent {
-  newCategorie!: Categories[];
+export class AjouterArticleComponent  {
+  
+  @Input() newCategorie!: Categories[];
 
-  newArticle!: Article[];
+  @Input() newArticle!: Article[];
 
-  newFournisseur!: Fournisseur[];
+  @Input() newFournisseur!: Fournisseur[];
+
+  @Output() buttonAjouter = new EventEmitter<Article>()
 
   ArticleForm!: FormGroup;
 
@@ -26,14 +27,16 @@ export class AjouterArticleComponent {
 
   fournisseursSelectionnesText: string = '';
 
-  constructor(
-    private artServ: ArticleuServiceService,
-    private fourServ: FournisseurServiceService,
-    private fb: FormBuilder
-  ) {
+  showFournisseurs: boolean = true ;
+  showInput: boolean = true;
+  showSpan: boolean = true;
+  inputValue: string = '';
+
+  constructor(private fb: FormBuilder) {
     this.ArticleForm = this.fb.group({
       libelle: ['', [Validators.required, Validators.minLength(3)]],
       prix: ['', [Validators.required, Validators.pattern(/^\d*$/)]],
+      reference : [''],
       stock: [
         '',
         [Validators.required, Validators.min(1), Validators.pattern(/^\d*$/)],
@@ -41,30 +44,43 @@ export class AjouterArticleComponent {
       categorieId: ['', Validators.required],
       fournisseurId: [[], Validators.required],
     });
-  }
-  ngOnInit(): void {
-    this.loadArticle();
+   
+  this.ArticleForm.get('libelle')?.valueChanges.subscribe((libelle) => {
+    this.updateReference(libelle);
+  });
+
+  this.ArticleForm.get('categorieId')?.valueChanges.subscribe((categorieId) => {
+    const libelle = this.ArticleForm.get('libelle')?.value;
+    this.updateReference(libelle, categorieId);
+  });
+
   }
 
-  loadArticle(): void {
-    this.artServ.allArticle(1).subscribe((response) => {
-      this.newArticle = response.data;
-      console.log(response.fournisseurs);
-      console.log(response.categories);
-      this.newFournisseur = response.fournisseurs;
-      this.newCategorie = response.categories;
-    });
+  updateReference(libelle: string, categorieId?: number): void {
+  
+    const libellePrefixe = libelle.substring(0, 3);
+    const categorieTexte = categorieId; 
+    const reference = `REF-${libellePrefixe}-${categorieTexte}-X`; 
+
+    this.ArticleForm.patchValue({ reference: reference });
   }
+  
 
   rechercheFournisseur() {
     const nomFournisseurValue = this.ArticleForm.value.fournisseurId.toLowerCase();
+  console.log(this.newCategorie);
   
+    console.log(nomFournisseurValue);
+    
     if (nomFournisseurValue.length >= 3) {
       const resultatsFiltres = this.newFournisseur.filter((objet) =>
         objet.nom_fournisseur.toLowerCase().startsWith(nomFournisseurValue)
       );
+      console.log(resultatsFiltres);
+      
       if (resultatsFiltres.length != null  ) {
         this.resultats = resultatsFiltres;
+        this.showFournisseurs = true
       } 
     } 
   }
@@ -89,5 +105,33 @@ export class AjouterArticleComponent {
 
   get libelleForm() {
     return this.ArticleForm.get('libelle');
+  }
+
+  submitForm(): void {
+
+    
+    if (this.ArticleForm.valid) {
+      const formData = this.ArticleForm.value;
+
+      
+      const article: Article = {
+        libelle: formData.libelle,
+        prix: +formData.prix,
+        stock: +formData.stock,
+        categories_id: +formData.categorieId,
+        fournisseur_id: this.fournisseursSelectionnes.length > 0 ? this.fournisseursSelectionnes : [],
+      };
+      
+      this.buttonAjouter.emit(article);
+
+      this.ArticleForm.reset();
+      this.fournisseursSelectionnes = [];
+      this.showFournisseurs = false;
+    }
+  }
+
+  basculerAffichage(): void {
+    this.showFournisseurs = !this.showFournisseurs;
+    this.showInput = true
   }
 }
