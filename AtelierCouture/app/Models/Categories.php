@@ -22,4 +22,8 @@ class Categories extends Model
         'updated_at'
     ];
 
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
 }

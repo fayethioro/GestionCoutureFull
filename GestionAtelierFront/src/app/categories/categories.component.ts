@@ -1,5 +1,5 @@
-import { CategoriesServiceService } from './../categories-service.service';
-import { Categories } from './../categories.model';
+import { CategoriesServiceService } from '../categories-service.service';
+import { Categories } from '../categories.model';
 import { Component } from "@angular/core";
 
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";

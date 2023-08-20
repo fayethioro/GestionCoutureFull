@@ -1,29 +1,33 @@
-<section>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<!-- <section> -->
+    <!-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" /> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <!------ Include the above in your HEAD tag ---------->
 
     <div class="container register">
         <div class="row shadow-lg p-3 mb-2 bg-body rounded">
-            <div class="register-right ">
+            <div class="register-right">
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                        <h3 class="register-heading mt-1 text-primary">Article</h3>
+                        <h3 class="register-heading mt-1 text-info">Ajouter un article</h3>
 
-                        <form [formGroup]="ArticleForm"  (ngSubmit)="submitForm()">
-                            <div class="row register-form ">
+                        <form [formGroup]="ArticleForm" (ngSubmit)="submitForm()" enctype="multipart/form-data">
+                            <div class="row register-form">
                                 <div class="gauche">
                                     <div class="form-group d-flex justify-content-between">
                                         <label for>libelle</label>
                                         <input type="text" class="form-control" placeholder="libelle" value
-                                            formControlName="libelle"  />
+                                            formControlName="libelle" />
                                     </div>
                                     <div *ngIf="libelleForm!.invalid && (libelleForm!.dirty || libelleForm!.touched)"
-                                        class="text-danger w-75  text-center">
-                                        <div *ngIf="libelleForm!.errors?.['required']">Le champ est obligatoire</div>
-                                        <div *ngIf="libelleForm!.errors?.['minlength']">Le libelle doit avoir au
-                                            moins 3 caratéres</div>
+                                        class="text-danger w-75 text-center">
+                                        <div *ngIf="libelleForm!.errors?.['required']">
+                                            Le champ est obligatoire
+                                        </div>
+                                        <div *ngIf="libelleForm!.errors?.['minlength']">
+                                            Le libelle doit avoir au moins 3 caratéres
+                                        </div>
                                     </div>
                                     <div class="form-group d-flex justify-content-between">
                                         <label for>Prix</label>
@@ -31,12 +35,12 @@
                                             formControlName="prix" />
                                     </div>
                                     <div *ngIf="ArticleForm.get('prix')!.invalid && (ArticleForm.get('prix')!.dirty || ArticleForm.get('prix')!.touched)"
-                                        class="text-danger w-75  text-center">
-                                        <div *ngIf="ArticleForm.get('prix')!.errors?.['required']">Le champ est
-                                            obligatoire et doit etre un nombre</div>
-                                        <div *ngIf="ArticleForm.get('prix')!.errors?.['pattern']"> Le prix doit être un
-                                            nombre positive.
-
+                                        class="text-danger w-75 text-center">
+                                        <div *ngIf="ArticleForm.get('prix')!.errors?.['required']">
+                                            Le champ est obligatoire et doit etre un nombre
+                                        </div>
+                                        <div *ngIf="ArticleForm.get('prix')!.errors?.['pattern']">
+                                            Le prix doit être un nombre positive.
                                         </div>
                                     </div>
                                     <div class="form-group d-flex justify-content-between">
@@ -45,90 +49,109 @@
                                             formControlName="stock" />
                                     </div>
                                     <div *ngIf="ArticleForm.get('stock')!.invalid && (ArticleForm.get('stock')!.dirty || ArticleForm.get('stock')!.touched)"
-                                        class="text-danger w-75  text-center">
-                                        <div *ngIf="ArticleForm.get('stock')!.errors?.['required']">Le champ est
-                                            obligatoire et doit etre un nombre</div>
-                                        <div *ngIf="ArticleForm.get('stock')!.errors?.['pattern']">Le stock doit etre
-                                            positive
+                                        class="text-danger w-75 text-center">
+                                        <div *ngIf="ArticleForm.get('stock')!.errors?.['required']">
+                                            Le champ est obligatoire et doit etre un nombre
+                                        </div>
+                                        <div *ngIf="ArticleForm.get('stock')!.errors?.['pattern']">
+                                            Le stock doit etre positive
                                         </div>
                                     </div>
                                     <div class="form-group d-flex justify-content-between">
                                         <label for>Categorie</label>
-                                        <select class="form-control" formControlName="categorieId">
-                                            <option value=""  disabled selected >choisi</option>
+                                        <select class="form-control" formControlName="categories_id"
+                                            (change)="onSelectChange($event)">
+                                            <option value="" disabled selected>choisi</option>
                                             <option value="{{cate.id}}" *ngFor="let cate of  newCategorie">
-                                                {{cate.libelle}} </option>
+                                                {{cate.libelle}}
+                                            </option>
                                             <option value></option>
                                         </select>
                                     </div>
-                                    <div *ngIf="ArticleForm.get('categorieId')!.invalid && (ArticleForm.get('categorieId')!.dirty || ArticleForm.get('stock')!.touched)"
-                                        class="text-danger w-75  text-center">
-                                        <div *ngIf="ArticleForm.get('categorieId')!.errors?.['required']">Le champ est
-                                            obligatoire</div>
+                                    <div *ngIf="ArticleForm.get('categories_id')!.invalid && (ArticleForm.get('categories_id')!.dirty || ArticleForm.get('categories_id')!.touched)"
+                                        class="text-danger w-75 text-center">
+                                        <div *ngIf="ArticleForm.get('categories_id')!.errors?.['required']">
+                                            Le champ est obligatoire
+                                        </div>
                                     </div>
                                     <div class="position-relative">
-                                        <div class="form-group d-flex justify-content-between" *ngIf="showInput" >
+                                        <div class="form-group d-flex justify-content-between" *ngIf="showInput">
                                             <label for>Fournisseur</label>
                                             <input type="text" class="form-control" placeholder="ex:four " value
-                                                formControlName="fournisseurId"  (input)="rechercheFournisseur()"/>
+                                                formControlName="fournisseur_id" (input)="rechercheFournisseur()" />
                                         </div>
-                                        
-                                        <div *ngIf="ArticleForm.get('fournisseurId')!.invalid && (ArticleForm.get('fournisseurId')!.dirty || ArticleForm.get('fournisseurId')!.touched)"
-                                            class="text-danger w-75  text-center">
-                                            <div *ngIf="ArticleForm.get('fournisseurId')!.errors?.['required']">Le champ est
-                                                obligatoire</div>
+
+                                        <div *ngIf="ArticleForm.get('fournisseur_id')!.invalid && (ArticleForm.get('fournisseur_id')!.dirty || ArticleForm.get('fournisseur_id')!.touched)"
+                                            class="text-danger w-75 text-center">
+                                            <div *ngIf="ArticleForm.get('fournisseur_id')!.errors?.['required']">
+                                                Le champ est obligatoire
+                                            </div>
                                         </div>
-                
-                                          <div *ngIf="!showFournisseurs" class="showSpan">
-                                            <!-- Affiche la valeur dans le span uniquement si showSpan est true -->
-                                            <span *ngFor="let id of fournisseursSelectionnes">
-                                                 {{ id }}
-                                              </span>
-                                          </div>
-                                          
+
+                                        <!-- <div *ngIf="!showFournisseurs" class="showSpan">
+                     
+                      <span *ngFor="let id of fournisseursSelectionnes">
+                        {{ id }}
+                      </span>
+                    </div> -->
                                     </div>
-                                    <div class="holder d-flex align-items-center justify-content-center" class="recherche" *ngIf="resultats" [hidden]=" !resultats || !showFournisseurs" >
-                                            <div class="row">
-                                                <div class="col-lg-5 mx-auto">
-                                                    <!-- CHECKBOX LIST -->
-                                                    <div class="card rounded border-0 shadow-sm position-relative">
-                                                        <div class="card-body " *ngFor="let fournisseur of resultats"   (change)="gererClicCheckbox(fournisseur.id)" >
-                                                            <div class="form-check ">
-                                                                <input class="form-check-input" id="flexCheck1" type="checkbox" value="{{fournisseur.id}}" [checked]="estFournisseurSelectionne(fournisseur.id)" >
-                                                                <label class="form-check-label" for="flexCheck1"><span class="fst-italic pl-1"> {{ fournisseur.nom_fournisseur }}</span></label>
+                                    <div class="holder d-flex align-items-center justify-content-center"
+                                        class="recherche" *ngIf="resultats" [hidden]=" !resultats || !showFournisseurs">
+                                        <div class="row">
+                                            <div class="mx-auto">
+                                                <!-- CHECKBOX LIST -->
+                                                <div class="card rounded border-0 shadow-sm position-relative">
+                                                    <div class="card-body" *ngFor="let fournisseur of resultats"
+                                                        (change)="gererClicCheckbox(fournisseur.id)">
+                                                        <div class="form-check  d-flex justify-content-around">
+                                                            <div>
+                                                                <input class="form-check-input" id="flexCheck1"
+                                                                type="checkbox" value="{{fournisseur.id}}"
+                                                                [checked]="estFournisseurSelectionne(fournisseur.id)" />
                                                             </div>
-                                                            
+                                                            <div><label class="form-check-label" for="flexCheck1"><span
+                                                                class="fst-italic pl-1">
+                                                                {{ fournisseur.nom_fournisseur }}</span></label></div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        
-                                    </div>
-                                   
-                                </div>
-                                <div class="droite">
-                                    <div class="form-group photo shadow-lg p-3 mb-2 bg-body rounded" style="background-color: red;" >
-                
-                                        <div class="d-flex justify-content-center">
-                                            <input type="file" accept="image/png, image/jpg, image/gif, image/jpeg"/>
                                         </div>
                                     </div>
-                                    <div class="form-group ref d-flex justify-content-center gap-2 mx-5 flex-column " >
-                                       <div>
-                                         <label for>Reference</label>
-                                        <input type="text" class="form-control" placeholder="Reference" formControlName="reference" readonly value />
+                                </div>
+                                <div class="droite">
+                                    <div class="form-group photo shadow-lg p-3 mb-2  rounded">
+                                        <div class="upload">
+                                            <img [src]="profilePicSrc" width="100" height="100" alt="" id="profile-pic">
+                                            <div class="round">
+                                              <input type="file" (change)="onFileChange($event)" formControlName="photo">
+                                              <i class="fa fa-camera input-file" style="color: #fff;"></i>
+                                            </div>
+                                          </div>
+                                          
                                     </div>
-                                        <button class="btn btn-primary" type="submit"
-                                        [disabled]="ArticleForm!.invalid">Ajouter</button>
-                                       </div>
+                                    <div *ngIf="ArticleForm.get('photo')!.invalid && (ArticleForm.get('photo')!.dirty || ArticleForm.get('stock')!.touched)"
+                                        class="text-danger w-75 text-center">
+                                        <div *ngIf="ArticleForm.get('photo')!.errors?.['pattern']">
+                                            Type de fichier invalide
+                                        </div>
+                                    </div>
+                                    <div class="form-group ref d-flex justify-content-center gap-2 mx-5 flex-column">
+                                        <div>
+                                            <label for>Reference</label>
+                                            <input type="text" class="form-control" placeholder="Reference"
+                                                formControlName="reference" readonly value  style="pointer-events: none;"/>
+                                        </div>
+                                        <button class="btn btn-white text-white" style="background: #7dd6ea;  " type="submit" [disabled]="ArticleForm!.invalid">
+                                            Ajouter
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
         </div>
-
     </div>
-</section>
+<!-- </section> -->

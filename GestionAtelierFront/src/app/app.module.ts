@@ -10,6 +10,7 @@ import { CategoriesComponent } from './categories/categories.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ArticleComponent } from './article/article.component';
 import { AjouterArticleComponent } from './article/ajouter-article/ajouter-article.component';
+import { AfficherArticleComponent } from './article/afficher-article/afficher-article.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { AjouterArticleComponent } from './article/ajouter-article/ajouter-artic
     AppComponent,
     CategoriesComponent,
     ArticleComponent,
-    AjouterArticleComponent
+    AjouterArticleComponent,
+    AfficherArticleComponent
   ],
   imports: [
     BrowserModule,

@@ -1,19 +1,29 @@
+<section>
+  <div *ngIf="!dataLoaded" class="spinner">
+    
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <!------ Include the above in your HEAD tag ---------->
 
-<div *ngIf="!dataLoaded" class="spinner">
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
+    <div id="preloader">
+      <div id="loader"></div>
+    </div>
+  </div>
+  <app-ajouter-article
+    *ngIf="dataLoaded"
+    [newFournisseur]="newFournisseur"
+    [newCategorie]="newCategorie"
+    [newArticle]="newArticle"
+    (buttonAjouter)="handleFormSubmit($event)"
+  >
+  </app-ajouter-article>
 
-<div id="preloader">
-  <div id="loader"></div>
-</div>
-</div>
-<app-ajouter-article
- *ngIf="dataLoaded" 
- [newFournisseur]="newFournisseur"
- [newCategorie]="newCategorie" 
- (buttonAjouter) = "handleFormSubmit($event)"
- >
-
-</app-ajouter-article>
+  <app-afficher-article
+   *ngIf="dataLoaded" 
+  [newArticle]="newArticle"
+  [links]="links"
+  (loadArticlesEvent)="loadArticle($event)"
+  >
+ 
+  </app-afficher-article>
+</section>

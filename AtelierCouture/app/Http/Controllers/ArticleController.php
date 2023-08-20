@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Traits\ImageTrait;
 use Illuminate\Http\Request;
 use App\Models\Approvisionnement;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ use App\Models\Categories;
 
 class ArticleController extends Controller
 {
+    use ImageTrait;
     /**
      * Display a listing of the resource.
      */
@@ -40,13 +42,14 @@ class ArticleController extends Controller
 
         $numeroInsertion = Article::where('categories_id', $categorie->id)->count() + 1;
         $libellePrefixe = substr($libelle, 0, 3);
-        $reference = "REF-{$libellePrefixe}-{$categorie->libelle}-{$numeroInsertion}";
 
-        return $reference;
+        return  "REF-{$libellePrefixe}-{$categorie->libelle}-{$numeroInsertion}";
     }
 
     public function ajouterArticleEtApprovisionnement(StoreArticleRequest $request)
     {
+         $request;
+
         try {
             // Démarrez une transaction
             DB::beginTransaction();
@@ -57,17 +60,19 @@ class ArticleController extends Controller
                 return response()->json(['message' => 'La catégorie spécifiée n\'existe pas'], 400);
             }
 
+
             $article = Article::create([
                 'reference' => $reference,
                 'libelle' => $request->input('libelle'),
                 'categories_id' => $request->input('categories_id'),
                 'prix_total' => 0,
                 'stock_total' => 0,
+                'photo' => null
             ]);
-       
-            // Article::
 
-            $fournisseurs = $request->input('fournisseur_id');
+            $fournisseurs = explode(',' , $request->input('fournisseur_id'));
+
+            
             $prixApprovisionnement = $request->input('prix');
             $stockApprovisionnement = $request->input('stock');
 
@@ -81,9 +86,14 @@ class ArticleController extends Controller
 
                 $approvisionnement->save();
 
-                $article->stock_total += $stockApprovisionnement;
-                $article->prix_total += $stockApprovisionnement * $prixApprovisionnement;
+                $article->stock_total = $stockApprovisionnement;
+                $article->prix_total = $prixApprovisionnement;
+
+                // $article->stock_total += $stockApprovisionnement;
+                // $article->prix_total += $stockApprovisionnement * $prixApprovisionnement;
             }
+
+            $article->uploadPhoto($request->file('photo'));
 
             $article->save();
 

@@ -20,7 +20,9 @@ class ArticleResource extends JsonResource
             'reference' =>$this->reference,
             'stock_total' =>$this->stock_total,
             'prix_total' => $this->prix_total,
-            'caterigorie' =>$this->categories_id
+            'categories_id' =>$this->categories_id,
+            'categories_libelle' =>$this->categories->libelle,
+            'photo' =>$this->photo
         ];
     }
 

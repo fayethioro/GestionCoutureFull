@@ -1,6 +1,5 @@
 
 .register{
-    /* background: -webkit-linear-gradient(left, #3931af, #00c6ff); */
     margin-top: 10px;
     height: auto;
     width: 78%;
@@ -36,9 +35,6 @@
     width: 100%;
     height: 95%;
     margin-top: 15px;
-    /* background:red */
-    /* border-top-left-radius: 10% 50%;
-    border-bottom-left-radius: 10% 50%; */
 }
 .register-left img{
     margin-top: 15%;
@@ -115,6 +111,7 @@ input, select {
     width: 70%;
     margin: auto;
     border-radius:10px;
+    /* background:rebeccapurple; */
   }
 
   .gauche{
@@ -122,6 +119,7 @@ input, select {
   }
   .droite{
     width: 35%;
+    /* background:red */
   }
   li{
     cursor: pointer;
@@ -140,6 +138,10 @@ input, select {
     cursor: pointer;
     font-size: 18px;
 }
+.ref{
+  width: 60%;
+  /* pointer-events: none; */
+}
 
 input[type="checkbox"] {
    
@@ -149,6 +151,18 @@ input[type="checkbox"] {
     margin-right: 10px;
    
 }
+input [type="file"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 3px #007bff;
+  }
 .ref input[type="text"], .ref input[type="submit"]  {
    
     width: 100%;
@@ -170,15 +184,6 @@ input[type="checkbox"] {
     margin-right: 10px;
    
 }
-/* div{
-    text-align:center;
-    padding:3%;
-    border:thin solid black;
-  } */
-  
-  /* input[type="file"]{
-    display: none;
-  } */
 
   label{
     cursor:pointer;
@@ -234,7 +239,49 @@ input[type="checkbox"] {
   .form-check:hover{
     background: aliceblue;
   }
+  .card{
+    width: auto;
+    background:aliceblue;
+  }
   .card-body {
     height: 16px !important;
     margin-bottom: 3px !important;
+    /* width: 67%; */
   }
+
+  /* =============================================================================== */
+
+  .upload{
+    width: 100px;
+    position: relative;
+    margin: auto;
+  }
+  
+  .upload img{
+    border-radius: 50%;
+    border: 6px solid #eaeaea;
+  }
+  
+  .upload .round{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #00B4FF;
+    width: 32px;
+    height: 32px;
+    line-height: 33px;
+    text-align: center;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  .upload .round input[type = "file"]{
+    position: absolute;
+    transform: scale(2);
+    opacity: 0;
+  }
+  
+  input[type=file]::-webkit-file-upload-button{
+      cursor: pointer;
+  }
+  

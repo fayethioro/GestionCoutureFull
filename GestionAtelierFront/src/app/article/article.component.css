@@ -72,3 +72,8 @@
           transform: rotate(360deg);
       }
   }
+
+  section{
+    width: auto;
+    background:aliceblue;
+  }

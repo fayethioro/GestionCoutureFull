@@ -20,10 +20,12 @@ export interface Article {
     prix:number;
     stock:number;
     stock_total?: number;
+    photo? :any;
     prix_total?: number;
-    categories_id: number; 
-    fournisseur_id? : number[]
-    data?:object
+    categories_id: number ;
+    categories_libelle?:string 
+    fournisseur_id? : number;
+    deleteButtonVisible? :boolean
   }
 
   export interface Fournisseur{
