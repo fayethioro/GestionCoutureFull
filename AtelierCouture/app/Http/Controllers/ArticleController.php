@@ -60,21 +60,20 @@ class ArticleController extends Controller
                 return response()->json(['message' => 'La catégorie spécifiée n\'existe pas'], 400);
             }
 
+            $prixApprovisionnement = $request->input('prix');
+            $stockApprovisionnement = $request->input('stock');
 
             $article = Article::create([
                 'reference' => $reference,
                 'libelle' => $request->input('libelle'),
                 'categories_id' => $request->input('categories_id'),
-                'prix_total' => 0,
-                'stock_total' => 0,
-                'photo' => null
+                'prix_total' =>  $prixApprovisionnement,
+                'stock_total' => $stockApprovisionnement,
+                 'photo'=> null
+                
             ]);
 
             $fournisseurs = explode(',' , $request->input('fournisseur_id'));
-
-            
-            $prixApprovisionnement = $request->input('prix');
-            $stockApprovisionnement = $request->input('stock');
 
             foreach ($fournisseurs as $fournisseur_id) {
                 $approvisionnement = new Approvisionnement([
@@ -86,14 +85,15 @@ class ArticleController extends Controller
 
                 $approvisionnement->save();
 
-                $article->stock_total = $stockApprovisionnement;
-                $article->prix_total = $prixApprovisionnement;
+                // $article->stock_total = $stockApprovisionnement;
+                // $article->prix_total = $prixApprovisionnement;
 
                 // $article->stock_total += $stockApprovisionnement;
                 // $article->prix_total += $stockApprovisionnement * $prixApprovisionnement;
             }
 
             $article->uploadPhoto($request->file('photo'));
+
 
             $article->save();
 
@@ -109,41 +109,66 @@ class ArticleController extends Controller
         }
     }
 
-
-
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Article $article)
+    public function modifierArticleEtApprovisionnement(UpdateArticleRequest $request, Article $article)
     {
-        //
-    }
+        try {
+            // Démarrez une transaction
+            DB::beginTransaction();
+    
+          
+            $article->update($request->only(['libelle', 'categories_id']));
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Article $article)
-    {
-        //
+            $reference = $this->genererReference($article->libelle, $article->categories_id);
+            if (!$reference) {
+                return response()->json(['message' => 'La catégorie spécifiée n\'existe pas'], 400);
+            }
+            $article->update(['reference' => $reference]);
+    
+            if ($request->hasFile('photo')) {
+                $this->uploadPhoto($request->file('photo'));
+            }
+    
+            if ($request->has(['fournisseur_id', 'prix', 'stock'])) {
+                $fournisseurs = explode(',', $request->input('fournisseur_id'));
+                $prixApprovisionnement = $request->input('prix');
+                $stockApprovisionnement = $request->input('stock');
+    
+               
+                $article->approvisionnements()->delete();
+    
+                foreach ($fournisseurs as $fournisseur_id) {
+                    $approvisionnement = new Approvisionnement([
+                        'prix' => $prixApprovisionnement,
+                        'stock' => $stockApprovisionnement,
+                        'fournisseur_id' => $fournisseur_id,
+                    ]);
+    
+                    $article->approvisionnements()->save($approvisionnement);
+                }
+            }
+    
+            // Validez et confirmez la transaction
+            DB::commit();
+    
+            return (new ArticleResource($article))->withMessage("Mise à jour réussie");
+        } catch (\Exception $e) {
+            // En cas d'erreur, annulez la transaction
+            DB::rollback();
+    
+            return response()->json(['message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
+        }
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateArticleRequest $request, Article $article)
-    {
-        //
-    }
-
+    
+    
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Article $article)
     {
         $article->delete();
-        return  $article;
+        
+        return (new ArticleResource($article))->withMessage("suppression reussi");
+
     }
 
     public function recherche(Request $request)

@@ -147,8 +147,6 @@ export class CategoriesComponent {
   addOrUpdateCategorie() {
     if (this.selectedCategorie !== null) {
       const libelleUpdated = this.categorieForm?.value.libelle
-      const categoriesUpdated = { id: this.selectedCategorie.id, libelle: libelleUpdated }
-
       console.log(libelleUpdated);
       
       this._categoriesservice.updateCategorieForm(this.selectedCategorie.id, { id: this.selectedCategorie.id, libelle: libelleUpdated } ).subscribe(

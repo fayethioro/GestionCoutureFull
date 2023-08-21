@@ -1,6 +1,6 @@
 import { Categories } from './../../categories.model';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Article, Fournisseur } from '../../shared/interface/rest-response';
 
 @Component({
@@ -9,13 +9,15 @@ import { Article, Fournisseur } from '../../shared/interface/rest-response';
   styleUrls: ['./ajouter-article.component.css'],
 })
 
-export class AjouterArticleComponent implements OnInit {
+export class AjouterArticleComponent implements OnInit  , OnChanges{
 
   // ===================================== Communication enfant Parent ========================================
   
   @Input() newCategorie!: Categories[];
 
   @Input() newArticle!: Article[];
+
+  @Input() editedArticle!: Article;
 
   @Input() newFournisseur!: Fournisseur[];
 
@@ -42,6 +44,9 @@ export class AjouterArticleComponent implements OnInit {
 
   profilePicSrc: string = 'assets/images/noprofil.jpg';
   
+  ajoutUpdate! : boolean 
+
+  libExiste : boolean = false
 
   file!:File;
   // ================================= Constructure ============================================
@@ -54,13 +59,33 @@ export class AjouterArticleComponent implements OnInit {
       stock: ['',[Validators.required, Validators.min(1), Validators.pattern(/^\d*$/)]],
       categories_id: ['', Validators.required],
       photo: [null, [ Validators.pattern('^.+\.(jpg|jpeg|png)$')]],
-      fournisseur_id: [[], Validators.required],
+      fournisseur_id: [[]],
     });
   }
+  ngOnChanges(): void {
+
+    console.log("change",this.editedArticle)
+    console.log("ngOnChanges executed");
+    if (this.editedArticle) {
+    
+      this.ArticleForm.patchValue({
+        libelle : this.editedArticle.libelle,
+        reference: this.editedArticle.reference,
+        prix  : this.editedArticle.prix_total,
+        stock :  this.editedArticle.stock_total,
+        categories_id : this.editedArticle.categories_id,
+        photo :this.editedArticle.photo
+      }); 
+      console.log(this.ArticleForm);
+      console.log("sdfgh");
+      this.updateImagePreview(this.editedArticle.photo); 
+    }
+    
+  }
+ 
   // ======================================= OnInit() ======================================
 
   ngOnInit(): void {
-
     console.log("liste article" , this.newArticle);
     this.ArticleForm.get('libelle')?.valueChanges.subscribe((libelle) => {
       this.updateReference(libelle, '' , -1 );
@@ -72,11 +97,11 @@ export class AjouterArticleComponent implements OnInit {
       const occ= this.compterOccurrences(this.newArticle , +caterigoriesLibelle[1])
       
       this.updateReference(this.ArticleForm.get('libelle')?.value, caterigoriesLibelle[0] , occ);
-    });
+    }); 
   }
   // ==================================== Recu^perer le libelle du categorie selectionner ======================================
   onSelectChange(event: Event) {
-    // console.log("dfgh",this.ArticleForm.get('categories_id')?.value,);
+    
     const selectElement = event.target as HTMLSelectElement;
     const selectedOption = selectElement.selectedOptions[0];
     const valeur = selectElement.value;
@@ -85,8 +110,6 @@ export class AjouterArticleComponent implements OnInit {
     
   }
   // =========================== Le nombre occurence d'un element dans un tableau =====================
-
-  
   compterOccurrences(tableau: Article[], elementCible: number): number {
     return tableau.reduce((compteur, article) => {
       if (article.categories_id === elementCible) {
@@ -104,11 +127,15 @@ export class AjouterArticleComponent implements OnInit {
       if (this.file) {
         const reader = new FileReader();
         reader.onload = (e: any) => {
-          this.profilePicSrc = e.target.result;
+          this.updateImagePreview(e.target.result);
         };
         reader.readAsDataURL(this.file);
       }
     }
+  }
+  // ============================================
+  private updateImagePreview(imageSrc: string) {
+    this.profilePicSrc = imageSrc;
   }
   // ================================= mettre a jour la reference  =============================================
 
@@ -122,6 +149,18 @@ export class AjouterArticleComponent implements OnInit {
 
     this.ArticleForm.patchValue({ reference: reference });
   }
+// =========================================  rechercher libelle exite ====================================
+libelleExiste(){
+  
+const articleExists = this.newArticle.some(article => article.libelle === this.ArticleForm.value.libelle);
+
+if (articleExists) {
+   return true
+}
+    return false
+
+}
+
   // =================================== Rechercher les fournisseur ==========================================
 
   rechercheFournisseur() {
@@ -171,14 +210,11 @@ export class AjouterArticleComponent implements OnInit {
   // ========================================  Envoye le formulaire au parent =====================================
 
   submitForm() {
-
-    console.log('ok');
     
+  
     if (this.ArticleForm.invalid) {
       return;
     }
-  
-    
     const formData = new FormData();
     formData.append('libelle', this.ArticleForm.value.libelle);
     formData.append('prix', this.ArticleForm.value.prix);
@@ -186,10 +222,8 @@ export class AjouterArticleComponent implements OnInit {
     formData.append('categories_id', this.ArticleForm.value.categories_id);
     formData.append('photo', this.file, this.file.name); 
     formData.append('fournisseur_id',  this.fournisseursSelectionnes.join());
-  
     console.log(formData);
-  
-    
+
     this.buttonAjouter.emit(formData); 
 
       this.ArticleForm.reset();
@@ -197,13 +231,7 @@ export class AjouterArticleComponent implements OnInit {
       this.profilePicSrc = 'assets/images/noprofil.jpg';
       this.showFournisseurs = false;
   }
-  
-  
-  
-  
-  
-  
-  
+
   
   
 }

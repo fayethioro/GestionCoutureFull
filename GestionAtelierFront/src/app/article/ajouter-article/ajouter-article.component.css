@@ -194,20 +194,31 @@ input [type="file"] {
   }
 
   .showSpan{
-    /* background: red; */
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 60%;
+    /* /* background: red;  */
+    
+    width: auto;
     height: 38px;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     border:solid 0.5px rgb(169, 168, 168);
-    padding: 2px;
+  
     color: gray;
 
 
   }
+  .fournisseur{
+    background: white;
+    border:solid 0.5px rgb(169, 168, 168);
 
+    width: 60%;
+    margin-left:19px;
+    border-radius:8px;
+    padding-left:2px;
+  }
+ 
+
+  .fournisseur input:focus {
+    outline: none;
+}
   /* ==========================================
     FOR DEMO PURPOSE
   ========================================== */

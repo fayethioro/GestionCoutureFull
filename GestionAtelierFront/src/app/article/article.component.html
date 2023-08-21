@@ -14,6 +14,7 @@
     [newFournisseur]="newFournisseur"
     [newCategorie]="newCategorie"
     [newArticle]="newArticle"
+    [editedArticle]="editedArticle"
     (buttonAjouter)="handleFormSubmit($event)"
   >
   </app-ajouter-article>
@@ -23,6 +24,10 @@
   [newArticle]="newArticle"
   [links]="links"
   (loadArticlesEvent)="loadArticle($event)"
+  (editArticleEvent)="onEditArticle($event)"
+  (deleteArticleEvent)="handleDelete($event)"
+
+  
   >
  
   </app-afficher-article>

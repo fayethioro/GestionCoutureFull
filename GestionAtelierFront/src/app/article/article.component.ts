@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {
   Categories,
   Links,
@@ -7,6 +7,7 @@ import {
 } from '../shared/interface/rest-response';
 import { ArticleuServiceService } from '../shared/service/articleu-service.service';
 import { AjouterArticleComponent } from './ajouter-article/ajouter-article.component';
+import { AfficherArticleComponent } from './afficher-article/afficher-article.component';
 
 @Component({
   selector: 'app-article',
@@ -19,6 +20,13 @@ export class ArticleComponent implements OnInit {
 
   @ViewChild(AjouterArticleComponent)
   ajouterArticleEnfant!: AjouterArticleComponent;
+
+  // @Input() editedArticle!: Article;
+
+  editedArticle!: Article;
+
+  @ViewChild(AfficherArticleComponent)
+  afficherArtcicleEnfant!: AfficherArticleComponent;
 
   // ==================================== Variable =========================================
 
@@ -37,15 +45,20 @@ export class ArticleComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadArticle();
+  }
 
-    console.log();
+  //================================== les donne venant de afficher pour editer==========================
+  onEditArticle(article: Article) {
+    console.log('article parent', article);
+    this.editedArticle = article;
+    console.log('dfghjkl', this.editedArticle);
   }
 
   // =================================== charger données formulaire ==========================================
 
   loadArticle(limit?: string): void {
-    this.artServ.allArticle(limit).subscribe(
-      (response) => {
+    this.artServ.allArticle(limit).subscribe({
+      next: (response) => {
         console.log(response);
 
         this.newArticle = response.data;
@@ -60,13 +73,10 @@ export class ArticleComponent implements OnInit {
 
         this.dataLoaded = true;
       },
-      (error) => {
-        console.error(
-          "Une erreur s'est produite lors du chargement des données :",
-          error
-        );
-      }
-    );
+      error: (err) => {
+        console.log('erreur', err);
+      },
+    });
   }
 
   // ================================== Recevoir les donne du formulaire et envoie au serveur ===========================================
@@ -74,20 +84,56 @@ export class ArticleComponent implements OnInit {
   handleFormSubmit(article: FormData) {
     if (this.ajouterArticleEnfant) {
       console.log(article);
-      this.artServ.addArticle(article).subscribe(
-        (response) => {
+      this.artServ.addArticle(article).subscribe({
+        next: (response) => {
           console.log(response);
           alert('ajout reussi');
           this.loadArticle();
         },
-        (error) => {
-          console.error(
-            "Une erreur s'est produite lors du chargement des données :",
-            error
-          );
+        error: (err) => {
+          console.log('erreur', err);
         }
-      );
+      });
     }
   }
+
+  handleDelete(id :number){
+    if (this.ajouterArticleEnfant) {
+      this.artServ.deleteArticle(id).subscribe({
+        next :(response) =>{
+          console.log(response);
+          alert('suppression reussi ');
+          this.loadArticle();
+        },
+        error: (err) => {
+          console.log('erreur', err);
+        }
+      });
+      
+    }
+  }
+  // handleFormSubmit(article: FormData) {
+  //   if (this.ajouterArticleEnfant) {
+  //     console.log(article);
+
+  //     if (this.editedArticle) {
+  //       const updatedData = {
+  //         id: this.editedArticle.id,
+  //         ...article
+  //       };
+  //       console.log(updatedData);
+        
+  //       // this.artServ. updateArticleForm(updatedData.id , updatedData).subscribe({
+  //       //   next: (response) => {
+  //       //     console.log(response);
+  //       //     alert('ajout reussi');
+  //       //     this.loadArticle();
+  //       //   },
+  //       //   error: (err) => {
+  //       //     console.log('erreur', err);
+  //       //   },
+  //       // });
+  //     }
+  //   }
+  // }
 }
-// =============================================================================

@@ -28,4 +28,23 @@ export class ArticleuServiceService {
       })}
        return this._http.post<RestResponse<Article>>(`${this.urlApi}articles/ajouterArticle` , tabArticle  , httpOptions ) 
   }
+
+  updateArticleForm(id:number  | undefined , newArticle : Article):Observable<RestResponse<Article>>{
+   
+    const httpOptions = {
+      headers : new HttpHeaders({
+        'Accept' : 'application/json',
+        'Content-Type' : 'application/json'
+      })} 
+      return this._http.put<RestResponse<Article>>(`${this.urlApi}articles/modifier/${id}`, newArticle , httpOptions)
+  }
+
+  deleteArticle(id: number): Observable<any> {
+    const httpOptions = {
+      headers : new HttpHeaders({
+        'Accept' : 'application/json',
+        'Content-Type' : 'application/json'
+      })} 
+    return this._http.delete(`${this.urlApi}articles/${id}` , httpOptions);
+  }
 }

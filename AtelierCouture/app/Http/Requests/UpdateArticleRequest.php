@@ -27,7 +27,7 @@ class UpdateArticleRequest extends FormRequest
             'stock' => 'sometimes|required|numeric|min:0.O1',
             'category_id' => 'sometimes|required|exists:categories,id',
             'fournisseur_id' => 'sometimes|required|exists:fournisseurs,id',
-            'photo' => 'sometimes|required|image|mimes:jpeg,png,jpg|max:2048', 
+            'photo' => 'sometimes|image|mimes:jpeg,png,jpg', 
         ];
     }
 
@@ -46,10 +46,10 @@ class UpdateArticleRequest extends FormRequest
             'category_id.exists' => 'La catégorie sélectionnée n\'existe pas.',
             'fournisseur_id.required' => 'Le champ Fournisseur est obligatoire.',
             'fournisseur_id.exists' => 'Le fournisseur sélectionné n\'existe pas.',
-            'photo.required' => 'Le champ Photo est obligatoire.',
+            // 'photo.required' => 'Le champ Photo est obligatoire.',
             'photo.image' => 'Le fichier doit être une image.',
             'photo.mimes' => 'Le fichier doit être de type :mimes.',
-            'photo.max' => 'La taille du fichier ne peut pas dépasser :max kilo-octets.',
+            // 'photo.max' => 'La taille du fichier ne peut pas dépasser :max kilo-octets.',
         ];
     }
     public function withValidator($validator)
