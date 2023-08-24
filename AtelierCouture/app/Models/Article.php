@@ -8,10 +8,13 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Article extends Model
 {
-    use HasFactory;  use HasFactory; use SoftDeletes;
+    use HasFactory;
+    use HasFactory;
+    use SoftDeletes;
 
 
     protected $guarded =
@@ -38,8 +41,36 @@ class Article extends Model
         }
     }
 
-    public function categories():BelongsTo
+    public function categories(): BelongsTo
     {
         return $this->belongsTo(Categories::class);
+    }
+
+    /**
+     * Summary of fournisseurs
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function fournisseurs(): BelongsToMany
+    {
+        return $this->belongsToMany(Fournisseur::class ,'article_fournisseur')->withTimestamps()
+            ->withPivot(['stock', 'prix']);
+    }
+
+     protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($article) {
+            $fournisseurIds = explode(',',request('fournisseur_id'));
+
+            $pivotData = [
+                'prix' => request('prix'),
+                'stock' => request('stock'),
+            ];
+            $article->fournisseurs()->attach($fournisseurIds, $pivotData);
+
+            
+        });
+        
     }
 }

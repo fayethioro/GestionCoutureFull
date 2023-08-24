@@ -19,7 +19,7 @@
         (ngSubmit)="addOrUpdateCategorie()">
         <div class="form-group mx-sm-3 mb-1">
           <div><label for="libelle" class="mr-3 font-weight-bold">Libelle</label></div>
-          <input type="text" class="form-control shadow-lg bg-white rounded" [ngClass]="{ 'disabled-row': ajout }"
+          <input type="text" class="form-control shadow-lg bg-white w-75 rounded" [ngClass]="{ 'disabled-row': ajout }"
             (input)="effacerMessageErreur()" (input)="rechercheCategorie()"
             formControlName="libelle" placeholder="ex:coco" required>
         </div>

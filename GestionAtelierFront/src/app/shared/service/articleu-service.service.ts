@@ -15,10 +15,14 @@ export class ArticleuServiceService {
 
 
 
-  allArticle(limit?: string):Observable<RestResponse<Article>>{
-
-    return this._http.get<RestResponse<Article>>(`${this.urlApi}articles/pagination?page=${limit}`)
+  allArticle(page? :string , limit?: string):Observable<RestResponse<Article>>{
+    if (limit && page) {
+      return this._http.get<RestResponse<Article>>(`${this.urlApi}articles/pagination?limit=${limit}&page=${page}`)
+    }
+      return this._http.get<RestResponse<Article>>(`${this.urlApi}articles/pagination`)
+      
   }
+// ===============================Ajout ======================================
 
   addArticle(tabArticle :FormData ):Observable<RestResponse<Article>>
   {
@@ -26,25 +30,32 @@ export class ArticleuServiceService {
       headers: new HttpHeaders({
         'Accept':   'application/json'
       })}
-       return this._http.post<RestResponse<Article>>(`${this.urlApi}articles/ajouterArticle` , tabArticle  , httpOptions ) 
+       return this._http.post<RestResponse<Article>>(`${this.urlApi}articles` , tabArticle  , httpOptions ) 
   }
 
-  updateArticleForm(id:number  | undefined , newArticle : Article):Observable<RestResponse<Article>>{
-   
+// ===============================Update======================================
+
+  updateArticleForm(id:number , newArticle : FormData):Observable<RestResponse<Article>> {
+    const httpOptions = {
+      headers : new HttpHeaders({
+        'Accept' : 'application/json',
+        // 'Content-Type' : 'application/json'
+      })} 
+      newArticle.append('_method', 'PUT')
+      console.log("dfghj",newArticle);
+      console.log("str",JSON. stringify(newArticle));
+
+      // console.log('boundary:', formData._boundary);
+
+      return this._http.post<RestResponse<Article>>(`${this.urlApi}articles/modifier/${id}`, newArticle , httpOptions)
+  }
+// ===============================Delete ======================================
+  deleteArticle(id: number): Observable<RestResponse<Article>> {
     const httpOptions = {
       headers : new HttpHeaders({
         'Accept' : 'application/json',
         'Content-Type' : 'application/json'
       })} 
-      return this._http.put<RestResponse<Article>>(`${this.urlApi}articles/modifier/${id}`, newArticle , httpOptions)
-  }
-
-  deleteArticle(id: number): Observable<any> {
-    const httpOptions = {
-      headers : new HttpHeaders({
-        'Accept' : 'application/json',
-        'Content-Type' : 'application/json'
-      })} 
-    return this._http.delete(`${this.urlApi}articles/${id}` , httpOptions);
+    return this._http.delete<RestResponse<Article>>(`${this.urlApi}articles/${id}` , httpOptions);
   }
 }

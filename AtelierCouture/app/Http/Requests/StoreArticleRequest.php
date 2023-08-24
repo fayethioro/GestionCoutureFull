@@ -52,7 +52,7 @@ class StoreArticleRequest extends FormRequest
         ];
     }
 
-    public function withValidator($validator)
+    public function failedValidator($validator)
     {
         if ($validator->fails()) {
 

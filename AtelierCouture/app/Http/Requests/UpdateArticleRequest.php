@@ -24,8 +24,8 @@ class UpdateArticleRequest extends FormRequest
         return [
             'libelle' => 'sometimes|required|string|unique:articles',
             'prix' => 'sometimes|required|numeric|min:1', 
-            'stock' => 'sometimes|required|numeric|min:0.O1',
-            'category_id' => 'sometimes|required|exists:categories,id',
+            'stock' => 'sometimes|required|numeric|min:1',
+            'categories_id' => 'sometimes|required|exists:categories,id',
             'fournisseur_id' => 'sometimes|required|exists:fournisseurs,id',
             'photo' => 'sometimes|image|mimes:jpeg,png,jpg', 
         ];

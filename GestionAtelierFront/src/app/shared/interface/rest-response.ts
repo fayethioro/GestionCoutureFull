@@ -4,7 +4,8 @@ export interface RestResponse <T> {
     links: Links[],
     message: string;
     fournisseurs : Fournisseur[],
-    categories : Categories[]
+    categories : Categories[],
+    approvisionnement: Approvisionnement[]
 }
 
 export interface Links {
@@ -41,4 +42,12 @@ export interface Article {
     "libelle" :string;
     "data"? :  object;
   }
+
+  export  interface Approvisionnement 
+    {
+        prix?: number
+        stock?: number
+        article_id: number,
+        fournisseur_id: number
+    }
   

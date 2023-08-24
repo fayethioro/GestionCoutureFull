@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('approvisionnements', function (Blueprint $table) {
+        Schema::create('article_fournisseur', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->integer('prix');
-            $table->decimal('stock', 5, 2);
-            $table->foreignIdFor(Article::class);
-            $table->foreignIdFor(Fournisseur::class);
+            $table->integer('stock');
+            $table->foreignIdFor(Article::class)->onDelete('cascade');
+            $table->foreignIdFor(Fournisseur::class)->onDelete('cascade');;
             $table->softDeletes();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('approvisionnements');
+        Schema::dropIfExists('article_fournisseur');
     }
 };

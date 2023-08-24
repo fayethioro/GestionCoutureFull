@@ -13,164 +13,163 @@ use App\Http\Requests\UpdateArticleRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Categories;
 
-// use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Summary of ArticleController
+ */
 class ArticleController extends Controller
 {
     use ImageTrait;
     /**
      * Display a listing of the resource.
      */
-    public function paginationArticle(Request $request)
+    /**
+     * paginationArticle
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function paginationArticle(Request $request): ArticleCollection
     {
-        $parPage = $request->input('limit', 3);
-        $articles = Article::orderBy('created_at', 'desc')->paginate($parPage);
-        return (new ArticleCollection($articles))->withMessage("Liste des articles");
+        $parPage = $request->limit ?? null;
+        if ($parPage) {
+            $articles = Article::orderBy('created_at', 'desc')->paginate($parPage);
+            return (new ArticleCollection($articles))->withMessage("Liste des articles");
+        }
+        return (new ArticleCollection(Article::all()))->withMessage("Liste des articles");
     }
 
     /**
      * Store a newly created resource in storage.
      */
-
-    protected function genererReference($libelle, $categorieId)
+    /**
+     * genererReference
+     *
+     * @param  mixed $libelle
+     * @param  mixed $categorieId
+     * @return string
+     */
+    protected function genererReference($libelle, $categorieId): string
     {
         $categorie = Categories::find($categorieId);
 
         if (!$categorie) {
             return null;
         }
-
         $numeroInsertion = Article::where('categories_id', $categorie->id)->count() + 1;
         $libellePrefixe = substr($libelle, 0, 3);
-
-        return  "REF-{$libellePrefixe}-{$categorie->libelle}-{$numeroInsertion}";
+        return "REF-{$libellePrefixe}-{$categorie->libelle}-{$numeroInsertion}";
     }
 
-    public function ajouterArticleEtApprovisionnement(StoreArticleRequest $request)
+    /**
+     * Summary of store
+     * @param \App\Http\Requests\StoreArticleRequest $request
+     * @return void
+     */
+
+    public function store(StoreArticleRequest $request): ArticleResource
     {
-         $request;
+        // Début de la transaction
+        DB::beginTransaction();
+
+        try {
+            $article = Article::create([
+                'libelle' => $request->input('libelle'),
+                'reference' => $this->genererReference($request->input('libelle'), $request->input('categories_id')),
+                'categories_id' => $request->input('categories_id'),
+                'stock_total' => $request->input('stock'),
+                'prix_total' => $request->input('prix'),
+            ]);
+            DB::commit();
+
+            return (new ArticleResource($article))->withMessage("Ajout réussi");
+        } catch (\Exception $e) {
+            // Annulation de la transaction en cas d'erreur
+            DB::rollback();
+
+            return response()->json(['message' => 'Une erreur est survenue lors de l\'ajout.'], 500);
+        }
+    }
+  
+    public function modifierArticleEtApprovisionnement(UpdateArticleRequest $request, $id)
+    {
+        $article = Article::findOrFail($id);
 
         try {
             // Démarrez une transaction
             DB::beginTransaction();
 
-            $reference = $this->genererReference($request->input('libelle'), $request->input('categories_id'));
+            $article->libelle = $request->filled('libelle') ? $request->input('libelle') : $article->libelle;
+            $article->categories_id = $request->filled('categories_id') ? $request->input('categories_id') : $article->categories_id;
+            $article->prix_total = $request->filled('prix') ? $request->input('prix') : $article->prix_total;
+            $article->stock_total = $request->filled('stock') ? $request->input('stock') : $article->stock_total;
 
-            if (!$reference) {
-                return response()->json(['message' => 'La catégorie spécifiée n\'existe pas'], 400);
-            }
 
-            $prixApprovisionnement = $request->input('prix');
-            $stockApprovisionnement = $request->input('stock');
-
-            $article = Article::create([
-                'reference' => $reference,
-                'libelle' => $request->input('libelle'),
-                'categories_id' => $request->input('categories_id'),
-                'prix_total' =>  $prixApprovisionnement,
-                'stock_total' => $stockApprovisionnement,
-                 'photo'=> null
-                
-            ]);
-
-            $fournisseurs = explode(',' , $request->input('fournisseur_id'));
+            $fournisseurs = explode(',', $request->input('fournisseur_id'));
+            $prixApprovisionnement = $request->filled('prix') ? $request->input('prix') : $article->prix_total;
+            $stockApprovisionnement = $request->filled('stock') ? $request->input('stock') : $article->stock_total;
 
             foreach ($fournisseurs as $fournisseur_id) {
-                $approvisionnement = new Approvisionnement([
-                    'prix' => $prixApprovisionnement,
-                    'stock' => $stockApprovisionnement,
-                    'article_id' => $article->id,
-                    'fournisseur_id' => $fournisseur_id,
-                ]);
+                $existingApprovisionnement = Approvisionnement::where('article_id', $article->id)
+                    ->where('fournisseur_id', $fournisseur_id)
+                    ->first();
 
-                $approvisionnement->save();
+                if ($existingApprovisionnement) {
+                    $existingApprovisionnement->prix = $prixApprovisionnement;
+                    $existingApprovisionnement->stock = $stockApprovisionnement;
+                    $existingApprovisionnement->save();
+                } else {
+                    $approvisionnement = new Approvisionnement([
+                        'prix' => $prixApprovisionnement,
+                        'stock' => $stockApprovisionnement,
+                        'article_id' => $article->id,
+                        'fournisseur_id' => $fournisseur_id,
+                    ]);
 
-                // $article->stock_total = $stockApprovisionnement;
-                // $article->prix_total = $prixApprovisionnement;
-
-                // $article->stock_total += $stockApprovisionnement;
-                // $article->prix_total += $stockApprovisionnement * $prixApprovisionnement;
+                    $approvisionnement->save();
+                }
             }
 
-            $article->uploadPhoto($request->file('photo'));
-
+            if ($request->hasFile('photo')) {
+                $article->uploadPhoto($request->file('photo'));
+            }
 
             $article->save();
 
             // Validez et confirmez la transaction
             DB::commit();
 
-            return (new ArticleResource($article))->withMessage("Ajout Réussi");
-        } catch (\Exception $e) {
-            // En cas d'erreur, annulez la transaction
-            DB::rollback();
-
-            return response()->json(['message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
-        }
-    }
-
-    public function modifierArticleEtApprovisionnement(UpdateArticleRequest $request, Article $article)
-    {
-        try {
-            // Démarrez une transaction
-            DB::beginTransaction();
-    
-          
-            $article->update($request->only(['libelle', 'categories_id']));
-
-            $reference = $this->genererReference($article->libelle, $article->categories_id);
-            if (!$reference) {
-                return response()->json(['message' => 'La catégorie spécifiée n\'existe pas'], 400);
-            }
-            $article->update(['reference' => $reference]);
-    
-            if ($request->hasFile('photo')) {
-                $this->uploadPhoto($request->file('photo'));
-            }
-    
-            if ($request->has(['fournisseur_id', 'prix', 'stock'])) {
-                $fournisseurs = explode(',', $request->input('fournisseur_id'));
-                $prixApprovisionnement = $request->input('prix');
-                $stockApprovisionnement = $request->input('stock');
-    
-               
-                $article->approvisionnements()->delete();
-    
-                foreach ($fournisseurs as $fournisseur_id) {
-                    $approvisionnement = new Approvisionnement([
-                        'prix' => $prixApprovisionnement,
-                        'stock' => $stockApprovisionnement,
-                        'fournisseur_id' => $fournisseur_id,
-                    ]);
-    
-                    $article->approvisionnements()->save($approvisionnement);
-                }
-            }
-    
-            // Validez et confirmez la transaction
-            DB::commit();
-    
             return (new ArticleResource($article))->withMessage("Mise à jour réussie");
         } catch (\Exception $e) {
             // En cas d'erreur, annulez la transaction
             DB::rollback();
-    
+
             return response()->json(['message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
         }
     }
-    
-    
+
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Article $article)
+
+    /**
+     * destroy
+     *
+     * @param  mixed $article
+     * @return ArticleResource
+     */
+    public function destroy(Article $article): ArticleResource
     {
         $article->delete();
-        
-        return (new ArticleResource($article))->withMessage("suppression reussi");
 
+        return (new ArticleResource($article))->withMessage("suppression reussi");
     }
 
+    /**
+     * Summary of recherche
+     * @param \Illuminate\Http\Request $request
+     * @return array
+     */
     public function recherche(Request $request)
     {
         $recherche = $request->recherche;
@@ -178,7 +177,7 @@ class ArticleController extends Controller
             return ["data" => null];
         }
 
-        $article = Article::where('libelle',  $recherche)->first();
+        $article = Article::where('libelle', $recherche)->first();
 
         if ($article) {
             return ["data" => $article];

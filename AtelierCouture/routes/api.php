@@ -30,9 +30,8 @@ Route::post('/categories/restaure/{category}' , [CategoriesController::class , "
 Route::get('/articles/pagination' , [ArticleController::class , "paginationArticle"])->name('paginationArticle');
 Route::post('/articles/ajouterArticle' , [ArticleController::class , "ajouterArticleEtApprovisionnement"])->name('ajouterArticle');
 Route::post('/articles/recherche' , [ArticleController::class , "recherche"])->name('rechercheLibelle');
-// Route::put('/articles/article/{edit}' , [ArticleController::class , "update"])->name('update');
-Route::resource('articles', ArticleController::class);
 Route::put('/articles/modifier/{article}' , [ArticleController::class , "modifierArticleEtApprovisionnement"])->name('modifierArticle');
+Route::resource('articles', ArticleController::class);
 
 
 
