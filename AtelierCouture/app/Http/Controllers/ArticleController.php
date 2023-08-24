@@ -11,6 +11,7 @@ use App\Http\Resources\ArticleCollection;
 use App\Http\Requests\StoreArticleRequest;
 use App\Http\Requests\UpdateArticleRequest;
 use App\Http\Resources\ArticleResource;
+use App\Models\ArticleFournisseur;
 use App\Models\Categories;
 
 
@@ -29,7 +30,7 @@ class ArticleController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function paginationArticle(Request $request): ArticleCollection
+    public function paginationArticle(Request $request):ArticleCollection
     {
         $parPage = $request->limit ?? null;
         if ($parPage) {
@@ -37,6 +38,9 @@ class ArticleController extends Controller
             return (new ArticleCollection($articles))->withMessage("Liste des articles");
         }
         return (new ArticleCollection(Article::all()))->withMessage("Liste des articles");
+
+       
+
     }
 
     /**
@@ -67,7 +71,7 @@ class ArticleController extends Controller
      * @return void
      */
 
-    public function store(StoreArticleRequest $request): ArticleResource
+    public function store(StoreArticleRequest $request):ArticleResource
     {
         // Début de la transaction
         DB::beginTransaction();
@@ -80,6 +84,9 @@ class ArticleController extends Controller
                 'stock_total' => $request->input('stock'),
                 'prix_total' => $request->input('prix'),
             ]);
+            $article->uploadPhoto($request->file('photo'));
+            $article->save();
+            // Validez et conf
             DB::commit();
 
             return (new ArticleResource($article))->withMessage("Ajout réussi");
@@ -90,68 +97,31 @@ class ArticleController extends Controller
             return response()->json(['message' => 'Une erreur est survenue lors de l\'ajout.'], 500);
         }
     }
-  
-    public function modifierArticleEtApprovisionnement(UpdateArticleRequest $request, $id)
+
+    public function update(UpdateArticleRequest $request, Article $article)
     {
-        $article = Article::findOrFail($id);
+        DB::beginTransaction();
 
         try {
-            // Démarrez une transaction
-            DB::beginTransaction();
+        $article->update([
+            'libelle' => $request->input('libelle'),
+                // 'reference' => $this->genererReference($request->input('libelle'), $request->input('categories_id')),
+                'categories_id' => $request->input('categories_id'),
+                'stock_total' => $request->input('stock'),
+                'prix_total' => $request->input('prix'),
+        ]);
 
-            $article->libelle = $request->filled('libelle') ? $request->input('libelle') : $article->libelle;
-            $article->categories_id = $request->filled('categories_id') ? $request->input('categories_id') : $article->categories_id;
-            $article->prix_total = $request->filled('prix') ? $request->input('prix') : $article->prix_total;
-            $article->stock_total = $request->filled('stock') ? $request->input('stock') : $article->stock_total;
-
-
-            $fournisseurs = explode(',', $request->input('fournisseur_id'));
-            $prixApprovisionnement = $request->filled('prix') ? $request->input('prix') : $article->prix_total;
-            $stockApprovisionnement = $request->filled('stock') ? $request->input('stock') : $article->stock_total;
-
-            foreach ($fournisseurs as $fournisseur_id) {
-                $existingApprovisionnement = Approvisionnement::where('article_id', $article->id)
-                    ->where('fournisseur_id', $fournisseur_id)
-                    ->first();
-
-                if ($existingApprovisionnement) {
-                    $existingApprovisionnement->prix = $prixApprovisionnement;
-                    $existingApprovisionnement->stock = $stockApprovisionnement;
-                    $existingApprovisionnement->save();
-                } else {
-                    $approvisionnement = new Approvisionnement([
-                        'prix' => $prixApprovisionnement,
-                        'stock' => $stockApprovisionnement,
-                        'article_id' => $article->id,
-                        'fournisseur_id' => $fournisseur_id,
-                    ]);
-
-                    $approvisionnement->save();
-                }
-            }
-
-            if ($request->hasFile('photo')) {
-                $article->uploadPhoto($request->file('photo'));
-            }
-
-            $article->save();
-
-            // Validez et confirmez la transaction
-            DB::commit();
-
-            return (new ArticleResource($article))->withMessage("Mise à jour réussie");
+        
+        DB::commit();
+            return (new ArticleResource($article))->withMessage("Mise a jour réussi");
         } catch (\Exception $e) {
-            // En cas d'erreur, annulez la transaction
+            // Annulation de la transaction en cas d'erreur
             DB::rollback();
 
-            return response()->json(['message' => 'Une erreur est survenue : ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Une erreur est survenue lors du mis a jour.'], 500);
         }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-
+    
     /**
      * destroy
      *

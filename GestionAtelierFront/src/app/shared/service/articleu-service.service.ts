@@ -47,7 +47,7 @@ export class ArticleuServiceService {
 
       // console.log('boundary:', formData._boundary);
 
-      return this._http.post<RestResponse<Article>>(`${this.urlApi}articles/modifier/${id}`, newArticle , httpOptions)
+      return this._http.post<RestResponse<Article>>(`${this.urlApi}articles/${id}`, newArticle , httpOptions)
   }
 // ===============================Delete ======================================
   deleteArticle(id: number): Observable<RestResponse<Article>> {

@@ -28,9 +28,7 @@ Route::resource('categories', CategoriesController::class);
 Route::post('/categories/restaure/{category}' , [CategoriesController::class , "restore"])->withTrashed();
 
 Route::get('/articles/pagination' , [ArticleController::class , "paginationArticle"])->name('paginationArticle');
-Route::post('/articles/ajouterArticle' , [ArticleController::class , "ajouterArticleEtApprovisionnement"])->name('ajouterArticle');
 Route::post('/articles/recherche' , [ArticleController::class , "recherche"])->name('rechercheLibelle');
-Route::put('/articles/modifier/{article}' , [ArticleController::class , "modifierArticleEtApprovisionnement"])->name('modifierArticle');
 Route::resource('articles', ArticleController::class);
 
 

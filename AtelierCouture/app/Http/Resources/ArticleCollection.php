@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Http\Resources\FournisseurResource;
 use App\Models\Approvisionnement;
+use App\Models\ArticleFournisseur;
 use Illuminate\Http\Request;
 // use App\Http\Resources\StoreFournisseurResource;
 use App\Models\Categories;
@@ -25,11 +26,9 @@ class ArticleCollection extends ResourceCollection
             'data' => $this->collection,
             'fournisseurs' => FournisseurResource::collection(Fournisseur::all()),
             'categories' => CategoriesResource::collection(Categories::all()),
-            // 'approvisionnement' => Approvisionnement::all(),
+            'approvisionnement' => ArticleFournisseur::all()
         ];
     }
-
-
     /**
      * Summary of paginationInformation
      * @param mixed $request

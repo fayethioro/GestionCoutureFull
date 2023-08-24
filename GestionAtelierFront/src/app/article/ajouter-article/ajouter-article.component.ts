@@ -271,6 +271,7 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
       formData.append('categories_id', this.ArticleForm.value.categories_id);
       formData.append('photo', this.file, this.file.name);
       formData.append('fournisseur_id', this.fournisseursSelectionnes.join());
+      
       this.buttonAjouter.emit(formData);
       this.ArticleForm.reset();
       this.fournisseursSelectionnes = [];
@@ -329,6 +330,7 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
         formData.append('fournisseur_id', fourA.join());
 
       }
+      console.log( "moh",formData);
       
       this.buttonAjouter.emit(formData);
       this.ArticleForm.reset();

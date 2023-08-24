@@ -52,25 +52,39 @@ class Article extends Model
      */
     public function fournisseurs(): BelongsToMany
     {
-        return $this->belongsToMany(Fournisseur::class ,'article_fournisseur')->withTimestamps()
+        return $this->belongsToMany(Fournisseur::class, 'article_fournisseur')->withTimestamps()
             ->withPivot(['stock', 'prix']);
     }
 
-     protected static function boot()
+    protected static function boot()
     {
         parent::boot();
 
         static::created(function ($article) {
-            $fournisseurIds = explode(',',request('fournisseur_id'));
+            $fournisseurIds = explode(',', request('fournisseur_id'));
 
             $pivotData = [
                 'prix' => request('prix'),
                 'stock' => request('stock'),
             ];
             $article->fournisseurs()->attach($fournisseurIds, $pivotData);
-
-            
         });
-        
+
+
+        static::updated(function ($article) {
+            $fournisseurIds = explode(',', request('fournisseur_id'));
+
+            $pivotData = [
+                'prix' => request('prix'),
+                'stock' => request('stock'), 
+            ];
+            $article->fournisseurs()->sync($fournisseurIds, $pivotData);
+        });
+
+        static::deleting(function ($article) {
+            $article->fournisseurs()->detach(); 
+        });
     }
+
+    
 }

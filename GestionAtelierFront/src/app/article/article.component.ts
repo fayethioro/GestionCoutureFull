@@ -79,7 +79,7 @@ export class ArticleComponent implements OnInit {
         this.newArticle = response.data;
         this.newFournisseur = response.fournisseurs;
         this.newCategorie = response.categories;
-        // this.newApprovisionnement = response.approvisionnement;
+        this.newApprovisionnement = response.approvisionnement;
         this.links = response.links;
         this.dataLoaded = true;
       },
