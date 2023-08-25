@@ -62,7 +62,6 @@ class Article extends Model
 
         static::created(function ($article) {
             $fournisseurIds = explode(',', request('fournisseur_id'));
-
             $pivotData = [
                 'prix' => request('prix'),
                 'stock' => request('stock'),
@@ -72,14 +71,22 @@ class Article extends Model
 
 
         static::updated(function ($article) {
-            $fournisseurIds = explode(',', request('fournisseur_id'));
+            $fournisseurIds = explode(',', request('fournisseur_id')) ?? [];
 
-            $pivotData = [
-                'prix' => request('prix'),
+            if (!empty($fournisseurIds)) {
+                $pivotData = [];
+
+                foreach ($fournisseurIds as $fournisseurId) {
+                    $pivotData[$fournisseurId] = [
+                        'prix' => request('prix'),
                 'stock' => request('stock'), 
-            ];
-            $article->fournisseurs()->sync($fournisseurIds, $pivotData);
+                    ];
+                }
+
+                $article->fournisseurs()->sync($pivotData);
+            }
         });
+
 
         static::deleting(function ($article) {
             $article->fournisseurs()->detach(); 

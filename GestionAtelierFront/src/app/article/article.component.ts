@@ -1,14 +1,10 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import {
-  Categories,
-  Links,
-  Article,
-  Fournisseur,
-  Approvisionnement,
-} from "../shared/interface/rest-response";
+
 import { ArticleuServiceService } from "../shared/service/articleu-service.service";
 import { AjouterArticleComponent } from "./ajouter-article/ajouter-article.component";
 import { AfficherArticleComponent } from "./afficher-article/afficher-article.component";
+import { Approvisionnement, Article, Categories, Fournisseur } from "../shared/interface/rest-data";
+import { Links } from "../shared/interface/rest-response";
 
 @Component({
   selector: "app-article",

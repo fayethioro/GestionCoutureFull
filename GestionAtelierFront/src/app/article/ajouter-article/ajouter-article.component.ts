@@ -9,17 +9,12 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {
-  AbstractControl,
   FormBuilder,
   FormGroup,
-  ValidationErrors,
   Validators,
 } from '@angular/forms';
-import {
-  Approvisionnement,
-  Article,
-  Fournisseur,
-} from '../../shared/interface/rest-response';
+import { Article, Fournisseur, Approvisionnement } from 'src/app/shared/interface/rest-data';
+
 
 @Component({
   selector: 'app-ajouter-article',

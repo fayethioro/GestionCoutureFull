@@ -111,6 +111,9 @@ class ArticleController extends Controller
                 'prix_total' => $request->input('prix'),
         ]);
 
+        // $article->reference = $this->genererReference($request->input('libelle'), $request->input('categories_id'));
+        // $article->uploadPhoto($request->file('photo'));
+        // $article->save();
         
         DB::commit();
             return (new ArticleResource($article))->withMessage("Mise a jour réussi");
