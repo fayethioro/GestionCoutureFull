@@ -30,7 +30,7 @@ class ArticleController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function paginationArticle(Request $request):ArticleCollection
+    public function paginationArticle(Request $request): ArticleCollection
     {
         $parPage = $request->limit ?? null;
         if ($parPage) {
@@ -38,9 +38,6 @@ class ArticleController extends Controller
             return (new ArticleCollection($articles))->withMessage("Liste des articles");
         }
         return (new ArticleCollection(Article::all()))->withMessage("Liste des articles");
-
-       
-
     }
 
     /**
@@ -71,7 +68,7 @@ class ArticleController extends Controller
      * @return void
      */
 
-    public function store(StoreArticleRequest $request):ArticleResource
+    public function store(StoreArticleRequest $request): ArticleResource
     {
         // Début de la transaction
         DB::beginTransaction();
@@ -103,19 +100,22 @@ class ArticleController extends Controller
         DB::beginTransaction();
 
         try {
-        $article->update([
-            'libelle' => $request->input('libelle'),
-                // 'reference' => $this->genererReference($request->input('libelle'), $request->input('categories_id')),
-                'categories_id' => $request->input('categories_id'),
-                'stock_total' => $request->input('stock'),
-                'prix_total' => $request->input('prix'),
-        ]);
 
-        // $article->reference = $this->genererReference($request->input('libelle'), $request->input('categories_id'));
-        // $article->uploadPhoto($request->file('photo'));
-        // $article->save();
-        
-        DB::commit();
+            $updateData = [
+                'stock_total' => $request->input('stock', $article->stock_total),
+                'prix_total' => $request->input('prix', $article->prix_total),
+                'libelle' => $request->input('libelle', $article->libelle),
+                'categories_id' => $request->input('categories_id', $article->categories_id),
+            ];
+
+            if ($request->hasFile('photo')) {
+                $photo = $request->file('photo');
+                $article->uploadPhoto($photo);
+                $updateData['photo'] = $article->photo;
+            }
+            $article->update($updateData);
+
+            DB::commit();
             return (new ArticleResource($article))->withMessage("Mise a jour réussi");
         } catch (\Exception $e) {
             // Annulation de la transaction en cas d'erreur
@@ -124,7 +124,7 @@ class ArticleController extends Controller
             return response()->json(['message' => 'Une erreur est survenue lors du mis a jour.'], 500);
         }
     }
-    
+
     /**
      * destroy
      *

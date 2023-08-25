@@ -75,7 +75,6 @@ class Article extends Model
 
             if (!empty($fournisseurIds)) {
                 $pivotData = [];
-
                 foreach ($fournisseurIds as $fournisseurId) {
                     $pivotData[$fournisseurId] = [
                         'prix' => request('prix'),

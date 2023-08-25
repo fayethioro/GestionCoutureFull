@@ -33,10 +33,14 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
   @Input() newFournisseur!: Fournisseur[];
 
   @Input() listeArticles!: Article[];
+  @Input() mode!: boolean ;
 
   @Input() newApprovisionnement!: Approvisionnement[];
 
   @Output() buttonAjouter = new EventEmitter<FormData>();
+
+  // @Input()  afficherArtcicleEnfant.modeAjout! :boolean;
+ 
 
   imageDirectoryPath: string = 'http://127.0.0.1:8000/storage';
 
@@ -68,7 +72,7 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
 
   file!: File;
 
-  modeAjout! : boolean 
+ 
   // ================================= Constructure ============================================
 
   constructor(private fb: FormBuilder) {
@@ -134,6 +138,7 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
       );
     });
   }
+  
   // ==================================== Recu^perer le libelle du categorie selectionner ======================================
   onSelectChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
@@ -182,13 +187,17 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
   }
   // =========================================  rechercher libelle exite ====================================
   libelleExiste() {
-    const articleExists = this.listeArticles.some(
-      (article) => article.libelle === this.ArticleForm.value.libelle
-    );
-    if (articleExists) {
+
+   if (this.listeArticles) {
+     const articleExists = this.listeArticles.some(
+       (article) => article.libelle === this.ArticleForm.value.libelle
+     );
+     if (articleExists) {
       return true;
     }
     return false;
+   }
+     return;
   }
 
   // =================================== Rechercher les fournisseur ==========================================
@@ -272,7 +281,7 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
       this.fournisseursSelectionnes = [];
       this.profilePicSrc = 'assets/images/noprofil.jpg';
       this.showFournisseurs = false;
-      this.modeAjout = true;
+      this.mode = true;
 
     } else {
       console.log(this.editedArticle);
@@ -325,16 +334,8 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
         formData.append('fournisseur_id', fourA.join());
 
       }
-      console.log( "moh",formData);
-      
       this.buttonAjouter.emit(formData);
-      this.ArticleForm.reset();
-      this.fournisseursSelectionnesText = [];
-      this.fournisseursSelectionnes = [];
-      this.profilePicSrc = 'assets/images/noprofil.jpg';
-      this.showFournisseurs = false;
-      
-     
     }
+    
   }
 }

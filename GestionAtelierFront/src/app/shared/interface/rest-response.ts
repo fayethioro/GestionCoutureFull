@@ -1,4 +1,5 @@
-import { Fournisseur, Categories, Approvisionnement } from "./rest-data";
+import { Categories } from "src/app/categories.model";
+import { Fournisseur, Approvisionnement } from "./rest-data";
 
 
 export interface RestResponse <T> {

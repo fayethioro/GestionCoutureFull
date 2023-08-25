@@ -168,9 +168,8 @@
                                     <button class="btn btn-white text-white" style="background: #2ec8ea;" type="submit"
                                         [disabled]="
                       ArticleForm!.invalid ||
-                      fournisseursSelectionnes.length == 0
-                    ">
-                                        {{ editedArticle ? "Mettre à jour" : "Ajouter" }}
+                      fournisseursSelectionnes.length == 0" >
+                                        {{ mode ? "Mettre à jour" : "Ajouter" }}
                                     </button>
                                 </div>
                             </div>

@@ -1,15 +1,20 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild } from '@angular/core';
 
-import { ArticleuServiceService } from "../shared/service/articleu-service.service";
-import { AjouterArticleComponent } from "./ajouter-article/ajouter-article.component";
-import { AfficherArticleComponent } from "./afficher-article/afficher-article.component";
-import { Approvisionnement, Article, Categories, Fournisseur } from "../shared/interface/rest-data";
-import { Links } from "../shared/interface/rest-response";
+import { ArticleuServiceService } from '../shared/service/articleu-service.service';
+import { AjouterArticleComponent } from './ajouter-article/ajouter-article.component';
+import { AfficherArticleComponent } from './afficher-article/afficher-article.component';
+import {
+  Approvisionnement,
+  Article,
+  Fournisseur,
+} from '../shared/interface/rest-data';
+import { Links } from '../shared/interface/rest-response';
+import { Categories } from '../categories.model';
 
 @Component({
-  selector: "app-article",
-  templateUrl: "./article.component.html",
-  styleUrls: ["./article.component.css"],
+  selector: 'app-article',
+  templateUrl: './article.component.html',
+  styleUrls: ['./article.component.css'],
   providers: [ArticleuServiceService],
 })
 export class ArticleComponent implements OnInit {
@@ -24,7 +29,6 @@ export class ArticleComponent implements OnInit {
 
   @ViewChild(AfficherArticleComponent)
   afficherArtcicleEnfant!: AfficherArticleComponent;
-
   // ==================================== Variable =========================================
 
   newCategorie!: Categories[];
@@ -35,6 +39,8 @@ export class ArticleComponent implements OnInit {
 
   dataLoaded: boolean = false;
   links!: Links[];
+           
+  mode!: boolean  ;
 
   // valFormData : FormData = this.ajouterArticleEnfant.formData
 
@@ -43,15 +49,18 @@ export class ArticleComponent implements OnInit {
   constructor(private artServ: ArticleuServiceService) {}
 
   ngOnInit(): void {
-    this.loadArticle({ page: "1", limit: "3" });
+    this.loadArticle({ page: '1', limit: '3' });
     this.chargementArticle();
   }
 
   //================================== les donne venant de afficher pour editer==========================
   onEditArticle(article: Article) {
-    console.log("article parent", article);
+    console.log('article parent', article);
+    this.mode = this.afficherArtcicleEnfant.modeAjout 
+     console.log("mon" , this.mode);
+     
     this.editedArticle = article;
-    console.log("dfghjkl", this.editedArticle);
+    console.log('dfghjkl', this.editedArticle);
   }
   // ================================================= A afficher================================================
 
@@ -64,7 +73,7 @@ export class ArticleComponent implements OnInit {
         this.dataLoaded = true;
       },
       error: (err) => {
-        console.log("erreur", err);
+        console.log('erreur', err);
       },
     });
   }
@@ -80,10 +89,11 @@ export class ArticleComponent implements OnInit {
         this.dataLoaded = true;
       },
       error: (err) => {
-        console.log("erreur", err);
+        console.log('erreur', err);
       },
     });
   }
+  
 
   // ================================== Recevoir les donne du formulaire et envoie au serveur ===========================================
 
@@ -93,28 +103,35 @@ export class ArticleComponent implements OnInit {
         this.artServ.addArticle(article).subscribe({
           next: (response) => {
             console.log(response);
-            alert("ajout reussi");
-            this.loadArticle({ page: "1", limit: "3" });
+            alert('ajout reussi');
+            this.loadArticle({ page: '1', limit: '3' });
           },
           error: (err) => {
-            console.log("erreur", err);
+            console.log('erreur', err);
           },
         });
       } else {
-        console.log("fghjk", article);
-        console.log(this.editedArticle.id);
-
         if (this.editedArticle.id) {
           this.artServ
             .updateArticleForm(this.editedArticle.id, article)
             .subscribe({
               next: (response) => {
                 console.log(response);
-                alert("mis a jour reussi");
-                this.loadArticle({ page: "1", limit: "3" });
+                alert('mis a jour reussi');
+                this.loadArticle({ page: '1', limit: '3' });
+                
+                this.ajouterArticleEnfant.ArticleForm.reset();
+                this.ajouterArticleEnfant.fournisseursSelectionnesText = [];
+                this.ajouterArticleEnfant.fournisseursSelectionnes = [];
+                this.ajouterArticleEnfant.profilePicSrc = 'assets/images/noprofil.jpg';
+                this.ajouterArticleEnfant.showFournisseurs = false;
+                this.ajouterArticleEnfant.mode= false;
+
+             console.log("mon ajout apres",this.mode);
+               
               },
               error: (err) => {
-                console.log("erreur", err);
+                console.log('erreur', err);
               },
             });
         }
@@ -127,11 +144,11 @@ export class ArticleComponent implements OnInit {
       this.artServ.deleteArticle(id).subscribe({
         next: (response) => {
           console.log(response);
-          alert("suppression reussi ");
-          this.loadArticle({ page: "1", limit: "3" });
+          alert('suppression reussi ');
+          this.loadArticle({ page: '1', limit: '3' });
         },
         error: (err) => {
-          console.log("erreur", err);
+          console.log('erreur', err);
         },
       });
     }
