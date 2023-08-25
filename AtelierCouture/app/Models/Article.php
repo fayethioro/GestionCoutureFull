@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Article extends Model
 {
     use HasFactory;
-    use HasFactory;
+    
     use SoftDeletes;
 
 
@@ -56,6 +56,11 @@ class Article extends Model
             ->withPivot(['stock', 'prix']);
     }
 
+    public function articleVentes():BelongsToMany
+    {
+        return $this->belongsToMany(ArticleVente::class, 'article_article_vente')->withTimestamps()
+        ->withPivot(['quantite']);
+    }
     protected static function boot()
     {
         parent::boot();

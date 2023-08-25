@@ -22,7 +22,8 @@ class StoreCategoriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "libelle" => "required|string|min:3|unique:categories"
+            "libelle" => "required|string|min:3|unique:categories",
+            "type_categorie" => "required"
         ];
     }
 

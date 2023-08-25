@@ -36,10 +36,9 @@ export class CategoriesComponent {
 
   constructor(private _categoriesservice: CategoriesServiceService,private fb: FormBuilder) {
     this.categorieForm = this.fb.group({
-      libelle: this.fb.control("", [
-        Validators.required,
-        Validators.minLength(3),
-      ]),
+      libelle: this.fb.control("", [Validators.required,Validators.minLength(3)]),
+     type_categorie: this.fb.control("", [Validators.required]),
+      
     });
   }
 
@@ -202,5 +201,8 @@ export class CategoriesComponent {
   
   get libelleForm() {
     return this.categorieForm.get("libelle");
+  }
+  get typeCategorieForm() {
+    return this.categorieForm.get("type_categorie");
   }
 }

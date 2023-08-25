@@ -8,13 +8,17 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * 1 => categorie confection 
+     * 2 => categorie de vente
      */
+    
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string("libelle")->unique();
+            $table->enum('type_categorie' ,[1, 2]);
             $table->softDeletes();
         });
     }

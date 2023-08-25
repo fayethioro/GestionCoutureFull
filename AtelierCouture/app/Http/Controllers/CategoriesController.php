@@ -49,7 +49,7 @@ class CategoriesController extends Controller
 
         $categorie = Categories::create($request->validated());
 
-        // return new CategoriesResource($categorie);
+        
         return CategoriesCollection::formatResponse($request, $categorie);
 
 

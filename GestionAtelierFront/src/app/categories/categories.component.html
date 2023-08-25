@@ -13,17 +13,28 @@
       </div>
     </div>
 
-    <div class="m-3 d-flex  row justify-content-center">
+    <div class="m-3 d-flex  row justify-content-center ">
 
-      <form [formGroup]="categorieForm" class="form-inline"
+      <form [formGroup]="categorieForm" class="form-inline d-flex "
         (ngSubmit)="addOrUpdateCategorie()">
-        <div class="form-group mx-sm-3 mb-1">
+        <div class="form-group mx-sm-3 mb-1 ">
           <div><label for="libelle" class="mr-3 font-weight-bold">Libelle</label></div>
-          <input type="text" class="form-control shadow-lg bg-white w-75 rounded" [ngClass]="{ 'disabled-row': ajout }"
+          <input type="text" class="form-control shadow-lg bg-white w-60 rounded" [ngClass]="{ 'disabled-row': ajout }"
             (input)="effacerMessageErreur()" (input)="rechercheCategorie()"
             formControlName="libelle" placeholder="ex:coco" required>
+            
         </div>
-        <button type="submit" class="btn btn-primary mb-2"
+        <div class="form-group mx-sm-3 mb-1 ">
+          <div><label for="libelle" class="mr-3 font-weight-bold">type de categories</label></div>
+             <select name="" id="" formControlName="type_categorie" class="form-control shadow-lg bg-white w-60 rounded" [ngClass]="{ 'disabled-row': ajout }">
+              <option value="" disabled selected style="background: gray;">
+                choisi
+            </option>
+            <option value="1">Categorie de confection</option>
+              <option value="2">Categorie de vente</option>
+             </select>
+        </div>
+        <button type="submit" class="btn btn-primary mb-2 bg-success w-60 h-50 mt-4"
           [disabled]="libelleForm!.invalid || !rechercheEffectuee">
           {{ selectedCategorie === null ? 'Ok' : 'Mettre à Jour' }}
         </button>
@@ -33,9 +44,15 @@
       <div
         *ngIf="libelleForm!.invalid && (libelleForm!.dirty || libelleForm!.touched)"
         class="text-danger w-75  px-4 ms-3">
-        <div *ngIf="libelleForm!.errors?.['required']">Le champ est obligatoire</div>
+        <div *ngIf="libelleForm!.errors?.['required']">Le champ libelle est obligatoire</div>
         <div *ngIf="libelleForm!.errors?.['minlength']">Le libelle doit avoir au
           moins 3 caratéres</div>
+      </div>
+      <div
+        *ngIf="typeCategorieForm!.invalid && (typeCategorieForm!.dirty || typeCategorieForm!.touched)"
+        class="text-danger w-75  px-4 ms-3">
+        <div *ngIf="typeCategorieForm!.errors?.['required']">Le champ type categorie est obligatoire</div>
+        
       </div>
     </div>
     <div>
@@ -62,6 +79,7 @@
                     </div>
                   </th>
                   <th scope="col-12">Libelle</th>
+                  <th scope="col-12">type_categorie</th>
                 </thead>
                 <tbody id="list_categorie">
                   <tr *ngFor="let categorie of newCategorie  ; let i= index">
@@ -75,9 +93,13 @@
                           for="deleteCheck-{{i}}"></label>
                       </div>
                     </td>
+
                     <td
                       (click)="editCategorie(categorie.libelle , categorie.id)" >{{categorie.libelle}}
                       
+                    </td>
+                    <td>
+                      {{categorie.type_categorie}}
                     </td>
                   </tr>
                 </tbody>

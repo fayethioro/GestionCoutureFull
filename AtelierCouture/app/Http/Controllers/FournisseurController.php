@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreFournisseurRequest;
 use App\Models\Fournisseur;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,14 @@ class FournisseurController extends Controller
             'data' => Fournisseur::all(),
             'links' => null,
             'message' => 'liste des fournisseur'
+        ];
+    }
+
+    public function store(StoreFournisseurRequest $request)
+    {
+        return [
+            'success' => true,
+            'data' =>  Fournisseur::create($request->validated())
         ];
     }
     public function recherche(Request $request)

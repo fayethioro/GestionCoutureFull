@@ -21,11 +21,12 @@ class ArticleCollection extends ResourceCollection
    
     public function toArray($request)
     {
+        $categories = Categories::where('type_categorie', 1)->get();
         return [
             'success' => true,
             'data' => $this->collection,
             'fournisseurs' => FournisseurResource::collection(Fournisseur::all()),
-            'categories' => CategoriesResource::collection(Categories::all()),
+            'categories' => CategoriesResource::collection($categories),
             'approvisionnement' => ArticleFournisseur::all()
         ];
     }
@@ -38,9 +39,7 @@ class ArticleCollection extends ResourceCollection
      */
     public function paginationInformation($request, $paginated, $default): array
     {
-        return  ['links' => $paginated['links']];
-
-        
+        return  ['links' => $paginated['links']];   
     }
 
     /**

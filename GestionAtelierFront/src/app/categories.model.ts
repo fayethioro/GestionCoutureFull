@@ -1,6 +1,7 @@
 export interface Categories {
-  "id" :number;
-  "libelle" :string;
+  id :number;
+  libelle :string;
+  type_categorie? :string
   "data"? :  object;
 }
 
