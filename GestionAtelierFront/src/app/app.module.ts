@@ -11,6 +11,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ArticleComponent } from './article/article.component';
 import { AjouterArticleComponent } from './article/ajouter-article/ajouter-article.component';
 import { AfficherArticleComponent } from './article/afficher-article/afficher-article.component';
+import { ArticleVenteComponent } from './article-vente/article-vente.component';
+import { HomeComponent } from './home/home.component';
+import { AjoutArticleVenteComponent } from './article-vente/ajout-article-vente/ajout-article-vente.component';
+
 
 
 @NgModule({
@@ -19,7 +23,10 @@ import { AfficherArticleComponent } from './article/afficher-article/afficher-ar
     CategoriesComponent,
     ArticleComponent,
     AjouterArticleComponent,
-    AfficherArticleComponent
+    AfficherArticleComponent,
+    ArticleVenteComponent,
+    HomeComponent,
+    AjoutArticleVenteComponent,
   ],
   imports: [
     BrowserModule,
