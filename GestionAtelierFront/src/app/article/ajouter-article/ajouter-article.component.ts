@@ -266,7 +266,9 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
       return;
     }
     if (!this.editedArticle) {
-      console.log("edi",this.editedArticle);
+      // console.log("edi",this.editedArticle);
+      this.mode = false;
+      console.log(this.mode);
       
       const formData = new FormData();
       formData.append('libelle', this.ArticleForm.value.libelle);
@@ -275,17 +277,10 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
       formData.append('categories_id', this.ArticleForm.value.categories_id);
       formData.append('photo', this.file, this.file.name);
       formData.append('fournisseur_id', this.fournisseursSelectionnes.join());
-      
       this.buttonAjouter.emit(formData);
-      this.ArticleForm.reset();
-      this.fournisseursSelectionnes = [];
-      this.profilePicSrc = 'assets/images/noprofil.jpg';
-      this.showFournisseurs = false;
-      this.mode = true;
+      this.mode = false;
 
     } else {
-      console.log(this.editedArticle);
-      
       const formData = new FormData();
 
       if (this.editedArticle.libelle !== this.ArticleForm.value.libelle) {

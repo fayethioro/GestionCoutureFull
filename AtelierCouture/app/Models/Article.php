@@ -58,7 +58,7 @@ class Article extends Model
 
     public function articleVentes():BelongsToMany
     {
-        return $this->belongsToMany(ArticleVente::class, 'article_article_vente')->withTimestamps()
+        return $this->belongsToMany(ArticleVente::class, 'article_article_ventes')->withTimestamps()
         ->withPivot(['quantite']);
     }
     protected static function boot()

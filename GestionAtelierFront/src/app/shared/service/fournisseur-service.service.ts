@@ -1,8 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { Fournisseur, RestResponse } from '../interface/rest-response';
+import {  RestResponse } from '../interface/rest-response';
 import { Observable } from 'rxjs';
+import { Fournisseur } from '../interface/rest-data';
 
 @Injectable({
   providedIn: 'root'

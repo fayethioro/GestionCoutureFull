@@ -25,7 +25,51 @@ class ArticleVente extends Model
 
     public function articles():BelongsToMany
     {
-        return $this->belongsToMany(Article::class, 'article_article_vente')->withTimestamps()
+        return $this->belongsToMany(Article::class, 'article_article_ventes')->withTimestamps()
         ->withPivot(['quantite']);
+    }
+
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::created(function ($articleVente) {
+    //         $articles = request()->input('article_id');
+    //         $attachments = [];
+
+    //         foreach ($articles as $article) {
+    //             $attachments[$article['id']] = ['quantite' => $article['quantite']];
+    //         }
+
+    //         $articleVente->articles()->attach($attachments);
+    //     });
+    // }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($articleVente) {
+
+            $marge = request()->input('marge_article');
+
+            $articles = request()->input('article_id');
+            $totalCoutFabrication = 0;
+
+            foreach ($articles as $article) {
+                
+                $articleId = $article['id'];
+                $quantite = $article['quantite'];
+                $article = Article::find($articleId);
+                $totalCoutFabrication += ($quantite * $article->prix_total);
+
+                $articleVente->articles()->attach($articleId, ['quantite' => $quantite]);
+            }
+            
+            $articleVente->update([
+                'cout_fabrication' => $totalCoutFabrication,
+                'prix_vente' => $totalCoutFabrication + $marge
+            ]);
+        });
     }
 }

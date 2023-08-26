@@ -22,15 +22,13 @@ class StoreArticleVenteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle' => 'required|string|min:3',
-            'reference' => 'string|max:3',
+            'libelle' => 'required|string|min:3||unique:article_ventes',
             'photo' => 'image|mimes:jpeg,png,jpg', 
-            'quantite_total' => 'numeric|min:1',
-            'cout_fabrication' => 'numeric|min:1',
-            'marge_article' => 'numeric|min:5000',
-            'prix_vente' => 'numeric|min:1',
+            'categories_id' => 'required|exists:categories,id',
+            'marge_article' => '|required|numeric|min:5000|max:1000000',
             'promo' => 'boolean',
             'valeur_promo' => 'numeric',
+            'article_id'=>'required'
         ];
     }
 }

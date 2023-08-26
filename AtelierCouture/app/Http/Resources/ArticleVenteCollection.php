@@ -3,10 +3,9 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\CategoriesResource;
+use App\Models\Article;
 use App\Models\ArticleArticleVente;
-use App\Models\ArticleFournisseur;
 use App\Models\Categories;
-use App\Models\Fournisseur;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -24,18 +23,18 @@ class ArticleVenteCollection extends ResourceCollection
 
         return [
             'success' => true,
-            'data' =>[
-                'articles' => $this->collection,
-                // 'articleVentes' => ArticleArticleVente::collection(ArticleArticleVente::all()),
-                'categoriesVente' => CategoriesResource::collection($categoriesVente),
-                'categoriesConfection' => CategoriesResource::collection($categoriesConfection),
-            ]
+            'data' => $this->collection,
+            'articleVentes' => ArticleArticleVente::all(),
+            'articleConfection' => Article::all(),
+            'categoriesVente' => CategoriesResource::collection($categoriesVente),
+            'categoriesConfection' => CategoriesResource::collection($categoriesConfection),
+
         ];
     }
 
     public function paginationInformation($request, $paginated, $default): array
     {
-        return  ['links' => $paginated['links']];   
+        return  ['links' => $paginated['links']];
     }
     public function withMessage($message)
     {

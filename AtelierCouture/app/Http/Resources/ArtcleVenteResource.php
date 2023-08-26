@@ -19,7 +19,7 @@ class ArtcleVenteResource extends JsonResource
             'reference' =>$this->whenNotNull($this->reference),
             'photo' =>$this->whenNotNull($this->photo),
             'quantite_total' =>$this->whenNotNull($this->quantite_total),
-            'cout_fabrication' =>$this->whenNotNull($this->libelle),
+            'cout_fabrication' =>$this->whenNotNull($this->cout_fabrication),
             'marge_article' =>$this->whenNotNull($this->marge_article),
             'prix_vente' =>$this->whenNotNull($this->prix_vente),
             'promo' =>$this->whenNotNull($this->promo),

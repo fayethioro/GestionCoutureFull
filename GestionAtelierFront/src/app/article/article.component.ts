@@ -105,6 +105,8 @@ export class ArticleComponent implements OnInit {
             console.log(response);
             alert('ajout reussi');
             this.loadArticle({ page: '1', limit: '3' });
+            this.resetForm();
+            this.ajouterArticleEnfant.mode= false;
           },
           error: (err) => {
             console.log('erreur', err);
@@ -119,16 +121,8 @@ export class ArticleComponent implements OnInit {
                 console.log(response);
                 alert('mis a jour reussi');
                 this.loadArticle({ page: '1', limit: '3' });
-                
-                this.ajouterArticleEnfant.ArticleForm.reset();
-                this.ajouterArticleEnfant.fournisseursSelectionnesText = [];
-                this.ajouterArticleEnfant.fournisseursSelectionnes = [];
-                this.ajouterArticleEnfant.profilePicSrc = 'assets/images/noprofil.jpg';
-                this.ajouterArticleEnfant.showFournisseurs = false;
+                 this.resetForm()
                 this.ajouterArticleEnfant.mode= false;
-
-             console.log("mon ajout apres",this.mode);
-               
               },
               error: (err) => {
                 console.log('erreur', err);
@@ -137,6 +131,16 @@ export class ArticleComponent implements OnInit {
         }
       }
     }
+  }
+
+  // =====================reset form ================================================
+
+  resetForm(){
+    this.ajouterArticleEnfant.ArticleForm.reset();
+    this.ajouterArticleEnfant.fournisseursSelectionnesText = [];
+    this.ajouterArticleEnfant.fournisseursSelectionnes = [];
+    this.ajouterArticleEnfant.profilePicSrc = 'assets/images/noprofil.jpg';
+    this.ajouterArticleEnfant.showFournisseurs = false;
   }
   // ============================================== supprimmer ===============================================
   handleDelete(id: number) {
