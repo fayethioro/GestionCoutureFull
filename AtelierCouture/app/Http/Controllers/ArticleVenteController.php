@@ -72,9 +72,9 @@ class ArticleVenteController extends Controller
             if (!$allElementsInSelectedCategories) {
                 return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
             }
-            
+
             $marge = $request->input('marge_article');
-            
+
             $articleVente = ArticleVente::create([
                 'libelle' => $request->input('libelle'),
                 'reference' => $this->genererReference($request->input('libelle'), $request->input('categories_id')),
@@ -86,6 +86,8 @@ class ArticleVenteController extends Controller
                 'cout_fabrication' => 0,
                 'prix_vente' => 0,
             ]);
+            $articleVente->uploadPhoto($request->file('photo'));
+            $articleVente->save();
             DB::commit();
 
             return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
@@ -94,7 +96,7 @@ class ArticleVenteController extends Controller
             return response()->json(['message' => 'Une erreur s\'est produite lors de la création de l\'ArticleVente.'], 500);
         }
     }
-    
+
     /**
      * Update the specified resource in storage.
      */

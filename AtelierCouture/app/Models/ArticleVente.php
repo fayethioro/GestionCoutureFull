@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleVente extends Model
 {
 
-    use HasFactory; use SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
     protected $guarded =
     [
         "id"
@@ -23,28 +25,22 @@ class ArticleVente extends Model
         'updated_at'
     ];
 
-    public function articles():BelongsToMany
+    public function articles(): BelongsToMany
     {
         return $this->belongsToMany(Article::class, 'article_article_ventes')->withTimestamps()
-        ->withPivot(['quantite']);
+            ->withPivot(['quantite']);
     }
+    public function uploadPhoto($photo)
+    {
+        if ($photo) {
+            $filename = time() . '_' . $photo->getClientOriginalName();
+            $path = 'articles/' . $filename;
+            Storage::disk('public')->put($path, file_get_contents($photo));
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     static::created(function ($articleVente) {
-    //         $articles = request()->input('article_id');
-    //         $attachments = [];
-
-    //         foreach ($articles as $article) {
-    //             $attachments[$article['id']] = ['quantite' => $article['quantite']];
-    //         }
-
-    //         $articleVente->articles()->attach($attachments);
-    //     });
-    // }
-
+            $this->photo = $path;
+            $this->save();
+        }
+    }
     protected static function boot()
     {
         parent::boot();
@@ -57,7 +53,7 @@ class ArticleVente extends Model
             $totalCoutFabrication = 0;
 
             foreach ($articles as $article) {
-                
+
                 $articleId = $article['id'];
                 $quantite = $article['quantite'];
                 $article = Article::find($articleId);
@@ -65,7 +61,7 @@ class ArticleVente extends Model
 
                 $articleVente->articles()->attach($articleId, ['quantite' => $quantite]);
             }
-            
+
             $articleVente->update([
                 'cout_fabrication' => $totalCoutFabrication,
                 'prix_vente' => $totalCoutFabrication + $marge
