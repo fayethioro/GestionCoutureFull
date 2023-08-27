@@ -1,13 +1,12 @@
-import { AbstractInterface } from "./abstract-interface";
+// import { AbstractInterface } from "./abstract-interface";
+import { CommunInterfaceArticle } from "./commun-interface-article";
  
-export interface Article extends AbstractInterface {
-    reference?: string;
+export interface Article extends CommunInterfaceArticle {
+   
     prix:number;
     stock:number;
     stock_total?: number;
-    photo? :any;
     prix_total?: number;
-    categories_id: number ;
     categories_libelle?:string 
     fournisseur_id? : number;
     deleteButtonVisible? :boolean
@@ -27,4 +26,15 @@ export interface Article extends AbstractInterface {
         article_id: number,
         fournisseur_id: number
     }
+export interface ArticleVente extends CommunInterfaceArticle {
+  promo: boolean;
+  valeur_promo: number | null;
+  cout_fabrication: number;
+  marge_article: number;
+  prix_vente: number;
+  quantite_total: number;
+  deleteButtonVisible? :boolean;
+  articles: any[]
+
+}
 

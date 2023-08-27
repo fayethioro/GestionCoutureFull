@@ -26,14 +26,17 @@ export class AfficherArticleComponent {
 
   modeAjout : boolean  = true;
 
-  loadArticles(infos:{page? :string ,limit?: string}): void {
-    this.loadArticlesEvent.emit({page :infos.page , limit :infos.limit});
-  }
+ 
 
   imageDirectoryPath: string = 'http://127.0.0.1:8000/storage/';
 
   ngOnInit(): void {
     this.reinitialiseTimer();
+  }
+  
+   // =================== pagination==========================================
+   loadArticles(infos:{page? :string ,limit?: string}): void {
+    this.loadArticlesEvent.emit({page :infos.page , limit :infos.limit});
   }
 // =========================================== Changer button delete / OK =========================================
   toggleButtons(index: number) {

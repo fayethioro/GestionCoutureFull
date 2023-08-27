@@ -24,11 +24,38 @@ class ArticleVenteController extends Controller
 
         $parPage = $request->limit ?? null;
         if ($parPage) {
-            $articles = ArticleVente::orderBy('created_at', 'desc')->paginate($parPage);
+            $articles = ArticleVente::with(['articles' => function ($query) {
+    $query->select('libelle', 'quantite');
+}])->orderBy('created_at', 'desc')->paginate($parPage);
             return (new ArticleVenteCollection($articles))->withMessage("Liste des articles");
         }
         return (new ArticleVenteCollection(ArticleVente::all()))->withMessage("Liste des articles");
     }
+
+    // public function paginationArticle(Request $request)
+    // {
+    //     $parPage = $request->limit ?? null;
+    //     if ($parPage) {
+    //         $articles = ArticleVente::orderBy('created_at', 'desc')->paginate($parPage);
+    
+    //         $articlesWithArticles = $articles->map(function ($article) {
+    //             return new ArtcleVenteResource($article);
+    //         });
+    
+    //         return new ArticleVenteCollection($articlesWithArticles);
+    //     }
+    
+    //     $articles = ArticleVente::all();
+    //     $articlesWithArticles = $articles->map(function ($article) {
+    //         return new ArtcleVenteResource($article);
+    //     });
+    
+    //     // Si vous ne paginez pas, vous devrez créer une nouvelle instance de CollectionResource
+    //     return new ArticleVenteCollection($articlesWithArticles);
+    // }
+    
+    
+
 
     protected function genererReference($libelle, $categorieId): string
     {
@@ -91,6 +118,7 @@ class ArticleVenteController extends Controller
             DB::commit();
 
             return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
+          
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['message' => 'Une erreur s\'est produite lors de la création de l\'ArticleVente.'], 500);

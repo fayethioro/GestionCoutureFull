@@ -1,0 +1,83 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div class="container" style="width: 90%; ">
+    <div class="row" style="width: 100%; ">
+        <div class="md-offset-1 md-10 m-auto" style="width: 100%">
+            <div class="panel">
+                <div class="panel-heading">
+
+                    <div class="row">
+                        <div class="col-sm-12 col-xs-12">
+                            <span class="fs-3 text-white">Liste des Articles</span>
+                            <form class="form-horizontal pull-right">
+                                <div class="form-group">
+                                    <label>items : </label>
+                                    <select class="form-control">
+                                        <option>5</option>
+                                        <option>10</option>
+                                        <option>15</option>
+                                        <option>20</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body table-responsive">
+                    <table class="table table-hover text-center">
+                        <thead>
+                            <tr>
+                                <th>photo</th>
+                                <th>libelle</th>
+                                <th>Qte Stock</th>
+                                <th class="text-center">Article confections</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let art of newArticleVente let i = index">
+                                <td><img src="assets/images/noprofil.jpg" width="50" height="50" alt="">
+                                </td>
+                                <td>{{art.libelle}} </td>
+                                <td>{{art.quantite_total}} </td>
+                                <td *ngFor="let arti of art.articles" style="border: solid 1px;">
+                                    <small >{{arti.libelle}}-</small>
+                                    <small>{{arti.quantite}}</small>
+                                </td>
+                                <td>
+                                    <ul class="action-list">
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <li> <button class="btn btn-info">Edit</button></li>
+                                            <li (click)="toggleButtons(i)" [hidden]="art.deleteButtonVisible">
+                                                <button class="btn btn-danger">Delete</button>
+                                            </li>
+                                            <li class="OK" [hidden]="!art.deleteButtonVisible" (click)="onClickOk(art)">
+                                                <button class="btn btn-success">Ok (<span>{{ countdown
+                                                        }}</span>)</button></li>
+                                        </div>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-6 col-xs-6  me-5 justify-content-end">
+                            <nav aria-label="...">
+                                <ul class="pagination">
+                                    <li *ngFor="let link of links">
+                                        <span [innerHTML]="link.label" class="{{link.active ? 'bg-primary' : ''}}"
+                                            (click)="loadArticles({page : link.label , limit : '3'})">
+                                        </span>
+                                    </li>
+
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

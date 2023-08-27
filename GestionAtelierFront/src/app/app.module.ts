@@ -14,6 +14,7 @@ import { AfficherArticleComponent } from './article/afficher-article/afficher-ar
 import { ArticleVenteComponent } from './article-vente/article-vente.component';
 import { HomeComponent } from './home/home.component';
 import { AjoutArticleVenteComponent } from './article-vente/ajout-article-vente/ajout-article-vente.component';
+import { AfficheArticleVenteComponent } from './article-vente/affiche-article-vente/affiche-article-vente.component';
 
 
 
@@ -27,6 +28,7 @@ import { AjoutArticleVenteComponent } from './article-vente/ajout-article-vente/
     ArticleVenteComponent,
     HomeComponent,
     AjoutArticleVenteComponent,
+    AfficheArticleVenteComponent,
   ],
   imports: [
     BrowserModule,

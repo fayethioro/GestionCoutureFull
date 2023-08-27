@@ -8,6 +8,7 @@ use App\Models\ArticleArticleVente;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ArticleVenteCollection extends ResourceCollection
 {
@@ -22,20 +23,27 @@ class ArticleVenteCollection extends ResourceCollection
         $categoriesConfection = Categories::where('type_categorie', 1)->get();
 
         return [
-            'success' => true,
+            // 'success' => true,
+            // 'data' => $this->resource,
+            // 'articleVentes' => ArticleArticleVente::all(),
+            // 'articleConfection' => Article::all(),
+            // 'categoriesVente' => CategoriesResource::collection($categoriesVente),
+            // 'categories' => CategoriesResource::collection($categoriesConfection),
             'data' => $this->collection,
-            'articleVentes' => ArticleArticleVente::all(),
-            'articleConfection' => Article::all(),
-            'categoriesVente' => CategoriesResource::collection($categoriesVente),
-            'categoriesConfection' => CategoriesResource::collection($categoriesConfection),
-
+           
+        
         ];
     }
 
     public function paginationInformation($request, $paginated, $default): array
     {
-        return  ['links' => $paginated['links']];
+        return  ['links' => $paginated['links']];   
     }
+
+
+
+
+    
     public function withMessage($message)
     {
         return $this->additional([

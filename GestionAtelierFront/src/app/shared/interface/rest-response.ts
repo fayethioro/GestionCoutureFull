@@ -1,5 +1,5 @@
 import { Categories } from "src/app/categories.model";
-import { Fournisseur, Approvisionnement } from "./rest-data";
+import { Fournisseur, Approvisionnement, Article } from "./rest-data";
 
 
 export interface RestResponse <T> {
@@ -9,7 +9,9 @@ export interface RestResponse <T> {
     message: string;
     fournisseurs : Fournisseur[],
     categories : Categories[],
-    approvisionnement: Approvisionnement[]
+    approvisionnement: Approvisionnement[],
+    categoriesVente : Categories[],
+    articleConfection:Article[]
 }
 
 export interface Links {

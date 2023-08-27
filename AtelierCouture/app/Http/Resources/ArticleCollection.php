@@ -28,6 +28,9 @@ class ArticleCollection extends ResourceCollection
             'fournisseurs' => FournisseurResource::collection(Fournisseur::all()),
             'categories' => CategoriesResource::collection($categories),
             'approvisionnement' => ArticleFournisseur::all()
+
+          
+                
         ];
     }
     /**

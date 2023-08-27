@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,6 +15,9 @@ class ArtcleVenteResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+       
+
+
         return [
             'libelle' =>$this->whenNotNull($this->libelle),
             'reference' =>$this->whenNotNull($this->reference),
@@ -24,7 +28,15 @@ class ArtcleVenteResource extends JsonResource
             'prix_vente' =>$this->whenNotNull($this->prix_vente),
             'promo' =>$this->whenNotNull($this->promo),
             'valeur_promo' =>$this->whenNotNull($this->valeur_promo),
-
+            'articles' => $this->whenLoaded('articles', function () {
+                return $this->articles->map(function ($article) {
+                    return [
+                        'libelle' => $article->libelle,
+                        'quantite' => $article->pivot->quantite,
+                    ];
+                });
+            }),
+        
         ];
     }
 
@@ -34,12 +46,14 @@ class ArtcleVenteResource extends JsonResource
             'message' => $message,
         ]);
     }
+    
 
+    
     public function with($request)
     {
         return [
             'success' => true,
-            'links' =>null,
+            // 'links' =>null,
         ];
     }
 }

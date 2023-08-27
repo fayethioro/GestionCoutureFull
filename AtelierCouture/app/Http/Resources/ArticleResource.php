@@ -33,11 +33,17 @@ class ArticleResource extends JsonResource
         ]);
     }
 
+    public function paginationInformation($request, $paginated, $default): array
+    {
+        return  ['links' => $paginated['links']];
+    }
+    
+
     public function with($request)
     {
         return [
             'success' => true,
-            'links' =>null,
+            
         ];
     }
 }
