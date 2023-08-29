@@ -24,7 +24,7 @@ export class AfficheArticleVenteComponent implements OnInit {
   modeAjout: boolean = true;
 
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
+    this.reinitialiseTimer();
   }
   // ============================ Pagination ===============================
   loadArticles(infos: { page?: string; limit?: string }): void {
@@ -77,5 +77,4 @@ onClickOk(article : ArticleVente) {
   this.deleteArticleEvent.emit(article.id)
  
 }
-
 }

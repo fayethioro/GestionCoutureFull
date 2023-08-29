@@ -1,10 +1,235 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
+import { Categories } from 'src/app/categories.model';
+import { Article } from 'src/app/shared/interface/rest-data';
 
 @Component({
   selector: 'app-ajout-article-vente',
   templateUrl: './ajout-article-vente.component.html',
-  styleUrls: ['./ajout-article-vente.component.css']
+  styleUrls: ['./ajout-article-vente.component.css'],
 })
-export class AjoutArticleVenteComponent {
+export class AjoutArticleVenteComponent implements OnInit {
+  @Input() categoriesVente!: Categories[];
+  @Input() newArticleConfection!: Article[];
 
+  ArticleVenteFormGroup!: FormGroup;
+
+  checkPromo: boolean = false;
+  showArticles: boolean = true;
+  
+  resultats!: Article[];
+  resul! : Article
+
+  file!: File;
+  
+  profilePicSrc: string = 'assets/images/noprofil.jpg';
+  selectedRowIndex: number | null = null; 
+  errorMessage:string = '' ;
+
+  selectedCaterigoriesLibelle = '';
+  caterigoriesLibelle: string = '';
+  coutFabrication :number = 0;
+
+  deseabledQuantite :boolean = false
+
+  // ================================= Constructure ============================================
+  constructor(private fb: FormBuilder) {
+    this.ArticleVenteFormGroup = this.fb.group({
+      libelle: ['', [Validators.required, Validators.minLength(3)]],
+      reference: [''],
+      categories_id: ['', Validators.required],
+      photo: [null, [Validators.pattern('^.+.(jpg|jpeg|png)$')]],
+      articleConf: this.fb.array([this.createArticleFormGroup()]),
+      cout_fabrication: [''],
+      marge_article: ['', [Validators.required, this.margeArticleValidator.bind(this)]],
+      prix_vente:['']
+    });
+  }
+   // ======================================= OnInit() ======================================
+
+   ngOnInit(): void {
+    this.ArticleVenteFormGroup.get('libelle')?.valueChanges.subscribe((libelle) => {
+      this.updateReference(libelle, '', -1);
+    });
+    const selectElement = document.querySelector('select') as HTMLSelectElement;
+    selectElement.addEventListener('change', (event) => {
+      const caterigoriesLibelle = this.onSelectChange(event);
+      const occ = this.compterOccurrences(
+        this.newArticleConfection,
+        +caterigoriesLibelle[1]
+      );
+
+      this.updateReference(
+        this.ArticleVenteFormGroup.get('libelle')?.value,
+        caterigoriesLibelle[0],
+        occ
+      );
+    });
+
+  }
+  // ============================== create formarray ===================
+  createArticleFormGroup(): FormGroup {
+    return this.fb.group({
+      id: [''],
+      libelles: ['', Validators.required],
+      quantites: [
+        '',
+        [Validators.required, Validators.min(1), Validators.pattern(/^\d*$/)],
+      ],
+    });
+  }
+  // ================= ajout et delete dns le formarray=====================
+  addArticleV() {
+    if (this.articleConf.valid) {
+      this.articleConf.push(this.createArticleFormGroup());
+    this.resultats = [];
+
+    }
+  }
+  removeItem(index: number) {
+    this.articleConf.removeAt(index);
+  }
+
+  // ================== Validation personaliser==============================
+// ===================marge_article=================
+margeArticleValidator(control: AbstractControl): ValidationErrors | null {
+  const marge = control.value;
+  if (marge < 5000 || marge > (this.coutFabrication * 3)) {
+    return { 'margeInvalid': true }; 
+  }
+  return null; 
+}
+
+   // ==================================== Recu^perer le libelle du categorie selectionner ======================================
+   onSelectChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedOption = selectElement.selectedOptions[0];
+    const valeur = selectElement.value;
+    this.selectedCaterigoriesLibelle = selectedOption.innerHTML;
+    return [this.selectedCaterigoriesLibelle, valeur];
+  }
+  // =========================== Le nombre occurence d'un element dans un tableau =====================
+  compterOccurrences(tableau: Article[], elementCible: number): number {
+    return tableau.reduce((compteur, article) => {
+      if (article.categories_id === elementCible) {
+        compteur++;
+      }
+      return compteur;
+    }, 0);
+  }
+  // ==============================submit=======================================
+  onSubmit() {
+    console.log(this.ArticleVenteFormGroup.value);
+  }
+  
+
+  // =========================================================== Charger photo ==================
+  onFileChange(event: Event) {
+    const filesTarget = event.target as HTMLInputElement;
+
+    if (filesTarget.files) {
+      this.file = filesTarget.files[0];
+      if (this.file) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.profilePicSrc = e.target.result;
+        };
+        reader.readAsDataURL(this.file);
+      }
+    }
+  }
+  // =================================== Rechercher les article de vente ==========================================
+
+rechercherArticleConfection(index: number, event: Event) {
+  const arTarget = event.target as HTMLInputElement;
+  if (arTarget.value) {
+    const query = arTarget.value;
+  const libelleArticle = query.toLowerCase();
+
+    if (libelleArticle.length >= 3) {
+      const resultatsFiltres = this.newArticleConfection
+        .filter((objet) => objet.libelle.toLowerCase().startsWith(libelleArticle))
+      if (resultatsFiltres.length > 0) {
+        this.resultats = resultatsFiltres;
+        this.showArticles = true;
+        //  l'index de la ligne en cours de recherche
+        this.selectedRowIndex = index; 
+      }
+      else{
+        this.errorMessage = "Ce article n'existe pas"
+      }
+    } 
+    
+  }
+}
+// ============================ ajout article dans le patchValue=======================
+selectResult(result: Article, index: number) {
+  const libellesControl = this.articleConf.at(index).get('libelles');
+  const idControl = this.articleConf.at(index).get('id');
+  this.resul = result
+  libellesControl!.setValue(result.libelle);
+  idControl!.setValue(result.id);
+  this.deseabledQuantite = false
+
+  this.resultats = [];
+  this.showArticles = false;
+  this.selectedRowIndex = null;
+}
+// ================================= Reference ==========================
+updateReference(libelle: string,caterigoriesLibelle?: string,varib?: number): void {
+  const libellePrefixe = libelle.substring(0, 3);
+  const categorieTexte = caterigoriesLibelle;
+  const X = varib! + 1;
+  const reference = `REF-${libellePrefixe}-${categorieTexte}-${X}`
+  this.ArticleVenteFormGroup.patchValue({ reference: reference });
+}
+//======================== cout fabrication======================
+
+chargementPrix(index:number,event:Event){
+  const quan = this.articleConf.at(index).get('quantites')?.value;
+
+  if (this.resul.prix_total) {
+    let prix = this.resul.prix_total * quan
+    this.coutFabrication += prix
+   console.log("cout =",this.coutFabrication);
+  this.ArticleVenteFormGroup.patchValue({cout_fabrication : this.coutFabrication});
+  }
+}
+// ========================== charger prix de vente=======================
+chargementPrixVente(){
+ if (this.marge_article!.valid) {
+   const quan = this.marge_article!.value;
+   let prixVente = this.coutFabrication + quan
+   this.ArticleVenteFormGroup.patchValue({prix_vente : prixVente});
+ }
+
+
+}
+
+  // ======================= Les getters ==================================
+
+  get libelle() {
+    return this.ArticleVenteFormGroup.get('libelle');
+  }
+  get photo() {
+    return this.ArticleVenteFormGroup.get('photo');
+  }
+
+  get articleConf(): FormArray {
+    return this.ArticleVenteFormGroup.get('articleConf') as FormArray;
+  }
+  get marge_article() {
+    return this.ArticleVenteFormGroup.get('marge_article') ;
+  }
+  get prix_vente() {
+    return this.ArticleVenteFormGroup.get('prix_vente') ;
+  }
 }

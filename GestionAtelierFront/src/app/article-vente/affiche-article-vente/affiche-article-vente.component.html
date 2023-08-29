@@ -41,8 +41,7 @@
                                 <td>{{art.libelle}} </td>
                                 <td>{{art.quantite_total}} </td>
                                 <td *ngFor="let arti of art.articles" style="border: solid 1px;">
-                                    <small >{{arti.libelle}}-</small>
-                                    <small>{{arti.quantite}}</small>
+                                    {{arti.libelle}}-{{arti.quantite}}
                                 </td>
                                 <td>
                                     <ul class="action-list">

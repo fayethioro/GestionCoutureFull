@@ -49,17 +49,17 @@ class ArticleVente extends Model
 
             $marge = request()->input('marge_article');
 
-            $articles = request()->input('article_id');
+            $articles = request()->input('articleConf');
             $totalCoutFabrication = 0;
 
             foreach ($articles as $article) {
 
                 $articleId = $article['id'];
-                $quantite = $article['quantite'];
+                $quantite = $article['quantites'];
                 $article = Article::find($articleId);
                 $totalCoutFabrication += ($quantite * $article->prix_total);
 
-                $articleVente->articles()->attach($articleId, ['quantite' => $quantite]);
+                $articleVente->articles()->attach($articleId, ['quantites' => $quantite]);
             }
 
             $articleVente->update([

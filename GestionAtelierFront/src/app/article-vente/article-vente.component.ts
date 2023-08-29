@@ -1,6 +1,7 @@
+import { Categories } from './../categories.model';
 import { Component, OnInit } from '@angular/core';
 import { ArticleVenteServiceService } from '../shared/service/article-vente-service.service';
-import { ArticleVente } from '../shared/interface/rest-data';
+import { Article, ArticleVente } from '../shared/interface/rest-data';
 import { Links } from '../shared/interface/rest-response';
 
 @Component({
@@ -14,7 +15,10 @@ export class ArticleVenteComponent  implements OnInit {
   dataLoaded: boolean = false;
 
   newArticleVente! : ArticleVente[]
+  categoriesVente! :Categories[]
+  newArticleConfection! : Article[]
   links! : Links[]
+  
 
   //  ========================constructeur===========================
 
@@ -30,13 +34,10 @@ export class ArticleVenteComponent  implements OnInit {
         console.log(response);
         
         this.newArticleVente = response.data;
-        console.log(this.newArticleVente);
-        
-        // this.newFournisseur = response.fournisseurs;
-        // this.newCategorie = response.categories;
-        // this.newApprovisionnement = response.approvisionnement;
+        this.newArticleConfection = response.articleConfection;
+        this.categoriesVente= response.categoriesVente;
         this.links = response.links;
-        console.log(this.links);
+        // console.log(this.links);
         
         this.dataLoaded = true;
       },

@@ -22,9 +22,9 @@
                                         formControlName="libelle" (input)="libelleExiste()" />
                                 </div>
                                 <div *ngIf="
-                    libelleForm!.invalid &&
-                    (libelleForm!.dirty || libelleForm!.touched)
-                  " class="text-danger w-75 text-center">
+                                        libelleForm!.invalid &&
+                                        (libelleForm!.dirty || libelleForm!.touched)
+                                    " class="text-danger w-75 text-center">
                                     <small *ngIf="libelleForm!.errors?.['required']">
                                         Le champ est obligatoire
                                     </small>
@@ -104,7 +104,7 @@
                                             <div class="d-flex gap-2">
                                                 <div>{{ four }}</div>
                                                 <div class="text-center" data-toggle="tooltip" title="delete"
-                                                 (click)="deleteCheck(four)">
+                                                    (click)="deleteCheck(four)">
                                                     <i class="fa-regular fa-circle-xmark" style="color: #e70808;"></i>
                                                 </div>
                                             </div>
@@ -168,7 +168,7 @@
                                     <button class="btn btn-white text-white" style="background: #2ec8ea;" type="submit"
                                         [disabled]="
                       ArticleForm!.invalid ||
-                      fournisseursSelectionnes.length == 0" >
+                      fournisseursSelectionnes.length == 0">
                                         {{ mode ? "Mettre à jour" : "Ajouter" }}
                                     </button>
                                 </div>

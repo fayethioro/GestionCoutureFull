@@ -19,13 +19,13 @@ class ArticleVenteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function paginationArticle(Request $request)
+    public function paginationArticle(Request $request): ArticleVenteCollection
     {
 
         $parPage = $request->limit ?? null;
         if ($parPage) {
             $articles = ArticleVente::with(['articles' => function ($query) {
-                $query->select('libelle', 'quantite');
+                $query->select('libelle', 'article_id', 'quantite');
             }])->orderBy('created_at', 'desc')->paginate($parPage);
             return (new ArticleVenteCollection($articles))->withMessage("Liste des articles");
         }
@@ -65,7 +65,7 @@ class ArticleVenteController extends Controller
             $requiredCategories = ['tissu', 'bouton', 'fil'];
             $selectedCategories = [];
 
-            foreach ($request->input('article_id') as $articleData) {
+            foreach ($request->input('articleConf') as $articleData) {
                 $article = Article::find($articleData['id']);
                 if ($article) {
                     $selectedCategories[] = $article->categories->libelle;
@@ -100,7 +100,7 @@ class ArticleVenteController extends Controller
             return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['message' => 'Une erreur s\'est produite lors de la création de l\'ArticleVente.'], 500);
+            return response()->json(['message' => 'Une erreur s\'est produite lors de la création de l\'ArticleVente.'.$e->getMessage()], 500);
         }
     }
 

@@ -31,6 +31,7 @@ class ArtcleVenteResource extends JsonResource
             'articles' => $this->whenLoaded('articles', function () {
                 return $this->articles->map(function ($article) {
                     return [
+                        'libelle_id'=>$article->id,
                         'libelle' => $article->libelle,
                         'quantite' => $article->pivot->quantite,
                     ];

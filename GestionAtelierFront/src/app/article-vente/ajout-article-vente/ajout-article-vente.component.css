@@ -256,19 +256,19 @@
     background-color: #FFFFFF;
     border-collapse: collapse;
     border-width: 1px;
-    border-color: #0DCAF1;
+    border-color: #0dcaf1;
     border-style: solid;
-    color: #000000;
+    color: white;
   }
   
   table.customTable td, table.customTable th {
     border-width: 1px;
-    border-color: #0DCAF1;
+    border-color: #0dcaf1;
     border-style: solid;
     padding: 5px;
   }
   
   table.customTable thead {
-    background-color: #0DCAF1;
+    background-color: #83dbed;
   }
   

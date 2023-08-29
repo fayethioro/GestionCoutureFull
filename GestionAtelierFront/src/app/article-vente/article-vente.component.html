@@ -8,7 +8,12 @@
 </div>
 
 <section>
-  <app-ajout-article-vente> </app-ajout-article-vente>
+  <app-ajout-article-vente
+    *ngIf="dataLoaded"
+    [categoriesVente]="categoriesVente"
+    [newArticleConfection]="newArticleConfection"
+  >
+  </app-ajout-article-vente>
   <app-affiche-article-vente
     *ngIf="dataLoaded"
     [newArticleVente]="newArticleVente"

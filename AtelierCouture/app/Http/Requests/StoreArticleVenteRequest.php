@@ -28,7 +28,7 @@ class StoreArticleVenteRequest extends FormRequest
             'marge_article' => '|required|numeric|min:5000|max:1000000',
             'promo' => 'boolean',
             'valeur_promo' => 'numeric',
-            'article_id'=>'required'
+            'articleConf'=>'required'
         ];
     }
 }

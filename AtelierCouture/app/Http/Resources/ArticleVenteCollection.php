@@ -23,13 +23,12 @@ class ArticleVenteCollection extends ResourceCollection
         $categoriesConfection = Categories::where('type_categorie', 1)->get();
 
         return [
-            // 'success' => true,
-            // 'data' => $this->resource,
-            // 'articleVentes' => ArticleArticleVente::all(),
-            // 'articleConfection' => Article::all(),
-            // 'categoriesVente' => CategoriesResource::collection($categoriesVente),
-            // 'categories' => CategoriesResource::collection($categoriesConfection),
+            'success' => true,
             'data' => $this->collection,
+            // 'articleVentes' => ArticleArticleVente::all(),
+            'articleConfection' => Article::all(),
+            'categoriesVente' => CategoriesResource::collection($categoriesVente),
+            'categories' => CategoriesResource::collection($categoriesConfection),
            
         
         ];
