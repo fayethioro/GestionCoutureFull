@@ -126,20 +126,38 @@ class ArticleVenteController extends Controller
      * @param \App\Http\Requests\UpdateArticleVenteRequest $request
      * @param \App\Models\ArticleVente $articleVente
      * @return void
-     */
-    public function update(UpdateArticleVenteRequest $request, ArticleVente $articleVente)
-    {
-        //
-    }
+//      */
+    public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente)
+{
+    return DB::transaction(function () use ($request, $article_vente) {
+        $articleConfArray = $request->input('articleConf');
+            $articles = json_decode($articleConfArray, true);
+        
+        if (!$this->validateCategories($articles)) {
+            return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
+        }
+        
+        // Mise à jour des propriétés de l'article de vente
+        $article_vente->update([
+            'libelle' => $request->input('libelle'),
+            'categories_id' => $request->input('categories_id'),
+            'marge_article' => $request->input('marge_article'),
+            'valeur_promo' => $request->input('valeur_promo'),
+            'promo' => $request->input('promo'),
+        ]);
+        return (new ArtcleVenteResource($article_vente))->withMessage("Mise à jour réussie");
+    }, 5); 
+}
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ArticleVente $articleVente): ArtcleVenteResource
+    public function destroy(ArticleVente $article_vente): ArtcleVenteResource
     {
-        $articleVente->delete();
+        $article_vente->delete();
 
-        return (new ArtcleVenteResource($articleVente))->withMessage("suppression reussi");
+        return (new ArtcleVenteResource($article_vente))->withMessage("suppression reussi");
     }
 
     /**

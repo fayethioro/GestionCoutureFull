@@ -4,6 +4,7 @@ import { ArticleVenteServiceService } from '../shared/service/article-vente-serv
 import { Article, ArticleVente } from '../shared/interface/rest-data';
 import { Links } from '../shared/interface/rest-response';
 import { AjoutArticleVenteComponent } from './ajout-article-vente/ajout-article-vente.component';
+import { AfficheArticleVenteComponent } from './affiche-article-vente/affiche-article-vente.component';
 
 @Component({
   selector: 'app-article-vente',
@@ -18,6 +19,10 @@ export class ArticleVenteComponent  implements OnInit {
   @ViewChild(AjoutArticleVenteComponent)
   ajouterArticleVenteEnfant! : AjoutArticleVenteComponent;
 
+  @ViewChild(AfficheArticleVenteComponent)
+  afficherArtcicleVenteEnfant!: AfficheArticleVenteComponent;
+  editedArticle!: ArticleVente;
+
   // ==================================== variable ===================================================================
 
   dataLoaded: boolean = false;
@@ -28,8 +33,8 @@ export class ArticleVenteComponent  implements OnInit {
   links! : Links[]
 
   listeArticles!: ArticleVente[];
+  mode!: boolean  ;
 
-  
 
   //  ========================constructeur===========================================================================
 
@@ -46,8 +51,6 @@ export class ArticleVenteComponent  implements OnInit {
     this.artVenteService.allArticle().subscribe({
       next: (response) => {
         this.listeArticles = response.data;
-        console.log(this.listeArticles);
-
         this.dataLoaded = true;
       },
       error: (err) => {
@@ -72,6 +75,13 @@ export class ArticleVenteComponent  implements OnInit {
       },
     });
   }
+  //================================== les donne venant de afficher pour editer==========================
+  onEditArticle(article: ArticleVente) {
+    this.mode = this.afficherArtcicleVenteEnfant.modeAjout 
+     console.log("mon" , this.mode);
+    this.editedArticle = article;
+    console.log('dfghjkl', this.editedArticle);
+  }
   // ================================== Recevoir les donne du formulaire et envoie au serveur ===========================================
 
   handleFormSubmit(article: FormData){
@@ -84,6 +94,8 @@ export class ArticleVenteComponent  implements OnInit {
             alert('ajout reussi');
             this.loadArticle({ page: '1', limit: '3' }); 
             this.resetForm();
+            this.ajouterArticleVenteEnfant.mode= false;
+
           },
           error: (err) => {
             console.log('erreur', err);
@@ -98,26 +110,25 @@ export class ArticleVenteComponent  implements OnInit {
     this.ajouterArticleVenteEnfant.articleConf.reset()
     this.ajouterArticleVenteEnfant.profilePicSrc = 'assets/images/noprofil.jpg';
     this.ajouterArticleVenteEnfant.showArticles = false;
+    const articlesArray = this.ajouterArticleVenteEnfant.articleConf
+    while (articlesArray.length) {
+      articlesArray.removeAt(0);
+    }
   }
-
-
-
-
-
   // ============================================== supprimmer ===============================================
-  // handleDelete(id: number) {
-  //   if (this.ajouterArticleEnfant) {
-  //     this.artServ.deleteArticle(id).subscribe({
-  //       next: (response) => {
-  //         console.log(response);
-  //         alert('suppression reussi ');
-  //         this.loadArticle({ page: '1', limit: '3' });
-  //       },
-  //       error: (err) => {
-  //         console.log('erreur', err);
-  //       },
-  //     });
-  //   }
-  // }
+  handleDelete(id: number) {
+    if (this.ajouterArticleVenteEnfant) {
+      this.artVenteService.deleteArticle(id).subscribe({
+        next: (response) => {
+          console.log(response);
+          alert('suppression reussi ');
+          this.loadArticle({ page: '1', limit: '3' });
+        },
+        error: (err) => {
+          console.log('erreur', err);
+        },
+      });
+    }
+  }
 
 }

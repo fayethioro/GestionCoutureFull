@@ -69,5 +69,34 @@ class ArticleVente extends Model
                 'prix_vente' => $totalCoutFabrication + $marge
             ]);
         });
+      static::updated(function ($article_vente) {
+            $marge = request()->input('marge_article');
+            $articleConfArray = request()->input('articleConf');
+            $articles = json_decode($articleConfArray, true);
+            $articleQuantities = [];
+            $totalCoutFabrication = $article_vente->cout_fabrication;
+
+        
+            foreach ($articles as $article) {
+                $articleId = $article['id'];
+                $quantite = $article['quantites'];
+                $articleQuantities[$articleId] = ['quantite' => $quantite];
+                $article = Article::find($articleId);
+                $totalCoutFabrication += ($quantite * $article->prix_total);
+            }
+        
+            $article_vente->articles()->sync($articleQuantities);
+            $nouveauPrixVente = $totalCoutFabrication + $marge;
+            
+            $article_vente->update([
+                'cout_fabrication' => $totalCoutFabrication,
+                'prix_vente' => $nouveauPrixVente
+            ]);
+        });  
+        
+
+        static::deleting(function ($article) {
+            $article->articles()->detach(); 
+        });
     }
 }

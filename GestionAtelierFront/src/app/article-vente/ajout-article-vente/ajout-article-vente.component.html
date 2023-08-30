@@ -116,9 +116,9 @@
                       class="d-flex justify-content-between"
                       style="color: #0dcaf1"
                       ><h4>liste des articles de confections</h4>
-                      <div class="btn btn-info mb-1" (click)="addArticleV()">
+                      <input class="btn btn-info mb-1 text-white" (click)="addArticleV()"  value="+"  style="width: 40px; height: 40px;" >
                         <i class="fa-solid fa-plus" style="color: white"></i>
-                      </div>
+                     
                     </label>
                     <div class="w-100">
                       <table class="customTable" formArrayName="articleConf">
@@ -187,6 +187,7 @@
                               </div>
                               <small *ngIf="errorMessage" class="text-danger w-75">{{errorMessage}}
                               </small>
+                              
                             </td>
 
                             <td>
@@ -221,17 +222,12 @@
                                 
                               </div>
                             </td>
-                            <td class="d-flex justify-content-between">
+                            <td class="d-flex justify-content-between gap-2">
                               <input
-                                class="btn btn-info mb-1"
+                                class="btn btn-info text-white mb-1" style="width: 40px; height: 40px;"
                                 (click)="addArticleV()"
-                                [disabled]="i !== articleConf.length - 1 ||article.get('libelles')!.invalid ||
-                                  article.get('quantites')!.invalid">
-                                <i
-                                  class="fa-solid fa-plus"
-                                  style="color: white"
-                                ></i>
-                              
+                                [disabled]="i !== articleConf.length - 1  || article.get('quantites')!.invalid  || article.get('libelles')!.invalid " value="+">
+                                
                               <button
                                 class="btn  btn-danger mb-1"
                                 (click)="removeItem(i)"
@@ -243,6 +239,10 @@
                           </tr>
                         </tbody>
                       </table>
+                      <small *ngIf="articleConf!.hasError('invalidArticleConf')"
+                          class="text-danger">
+                        Les catégories requises ('tissu', 'bouton', 'fil') ne sont pas remplies.
+                      </small>
                       <div class="text-danger">
                         <small *ngIf="errorMessageFormArray" class="text-danger w-75">{{errorMessageFormArray}}
                         </small>
@@ -353,7 +353,8 @@
                     type="submit"
                     [disabled]="articleConf.invalid || errorMessage || ArticleVenteFormGroup.invalid"
                   >
-                    Ajouter
+                  {{ mode ? "Mettre à jour" : "Ajouter" }}
+
                   </button>
                 </div>
               </div>

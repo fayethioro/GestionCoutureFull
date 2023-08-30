@@ -46,7 +46,7 @@
                                 <td>
                                     <ul class="action-list">
                                         <div class="d-flex justify-content-center gap-3">
-                                            <li> <button class="btn btn-info">Edit</button></li>
+                                            <li> <button class="btn btn-info" (click)="onEditArticle(art)">Edit</button></li>
                                             <li (click)="toggleButtons(i)" [hidden]="art.deleteButtonVisible">
                                                 <button class="btn btn-danger">Delete</button>
                                             </li>

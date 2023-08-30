@@ -13,6 +13,8 @@
     [categoriesVente]="categoriesVente"
     [newArticleConfection]="newArticleConfection"
     [listeArticles]="listeArticles"
+    [editedArticle]="editedArticle"
+    [mode]="mode"
     (buttonAjouter)="handleFormSubmit($event)"
   >
   </app-ajout-article-vente>
@@ -21,5 +23,7 @@
     [newArticleVente]="newArticleVente"
     (loadArticlesEvent)="loadArticle($event)"
     [links]="links"
+    (editArticleEvent)="onEditArticle($event)"
+    (deleteArticleEvent)="handleDelete($event)"
   ></app-affiche-article-vente>
 </section>

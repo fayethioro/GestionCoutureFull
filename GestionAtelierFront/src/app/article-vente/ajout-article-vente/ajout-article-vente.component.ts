@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
   FormBuilder,
   FormGroup,
   ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 import { Categories } from 'src/app/categories.model';
@@ -15,11 +16,14 @@ import { Article, ArticleVente } from 'src/app/shared/interface/rest-data';
   templateUrl: './ajout-article-vente.component.html',
   styleUrls: ['./ajout-article-vente.component.css'],
 })
-export class AjoutArticleVenteComponent implements OnInit {
+export class AjoutArticleVenteComponent implements OnInit,  OnChanges {
   // ===================================== communication parent => enfant===========================================
   @Input() categoriesVente!: Categories[];
   @Input() newArticleConfection!: Article[];
   @Input() listeArticles!: ArticleVente[];
+  @Input() editedArticle!: ArticleVente;
+  @Input() mode!: boolean ;
+
 
 
   // ===================================== communication enfant => parent===========================================
@@ -33,9 +37,7 @@ export class AjoutArticleVenteComponent implements OnInit {
   
   resultats!: Article[];
   resul! : Article
-
-
-
+  
   file!: File;
   
   profilePicSrc: string = 'assets/images/noprofil.jpg';
@@ -64,10 +66,44 @@ export class AjoutArticleVenteComponent implements OnInit {
       valeur_promo:[''],
       photo: [null, [Validators.pattern('^.+.(jpg|jpeg|png)$')]],
       articleConf: this.fb.array([]),
+      // articleConf: this.fb.array([], [this.validateCategories()]), 
       cout_fabrication: [''],
       marge_article: ['', [Validators.required, this.margeArticleValidator.bind(this)]],
       prix_vente:['']
     });
+   
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    const articlesArray = this.ArticleVenteFormGroup.get('articleConf') as FormArray;
+    while (articlesArray.length) {
+      articlesArray.removeAt(0);
+    }
+    if ('editedArticle' in changes && !changes['editedArticle'].firstChange) {
+      this.ArticleVenteFormGroup.patchValue({
+        libelle: this.editedArticle.libelle,
+        reference: this.editedArticle.reference,
+        categories_id: this.editedArticle.categories_id,
+        promo: this.editedArticle.promo,
+        valeur_promo: this.editedArticle.valeur_promo,
+        cout_fabrication: this.editedArticle.cout_fabrication,
+        marge_article: this.editedArticle.marge_article,
+        prix_vente: this.editedArticle.prix_vente,
+      });
+      this.profilePicSrc ='http://127.0.0.1:8000/storage' + '/' + this.editedArticle.photo;
+      const articlesArray = this.articleConf;
+
+      this.editedArticle.articles.forEach((article) => {
+      articlesArray.push(this.createArticleFormGroup());
+      const articleFormGroup = articlesArray.at(articlesArray.length - 1); 
+      articleFormGroup.patchValue({
+        id: article.id,
+        libelles: article.libelle,
+        quantites: article.quantite,
+      });
+    });
+
+      
+    }
   }
    // ======================================= OnInit() ==========================================================
 
@@ -96,12 +132,12 @@ export class AjoutArticleVenteComponent implements OnInit {
   }
   // ================= ajout et delete dns le formarray==============================================================
   addArticleV() {
-    if (this.articleConf.valid) {
-      this.articleConf.push(this.createArticleFormGroup());
-      this.resultats = [];
-      this.errorMessage = ''
-    }
+    const newArticleFormGroup = this.createArticleFormGroup();
+    this.articleConf.push(newArticleFormGroup);
+    this.resultats = [];
+    this.errorMessage = '';
   }
+  
   removeItem(index: number) {
   const quan = this.articleConf.at(index).get('quantites')?.value;
 
@@ -142,6 +178,20 @@ validationCategories(){
     this.allElementsInSelectedCategories = false
   }
 }
+// ====================================valid
+validateCategories(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const requiredCategories: string[] = ['tissu', 'bouton', 'fil'];
+    const articleCategorie = control.value;
+    // console.log(control);
+    const allElementsInSelected = requiredCategories.every(item =>
+      articleCategorie.includes(item)
+    );
+
+    return allElementsInSelected ? null : { 'invalidCategories': true };
+  };
+}
+
 // =========================================  rechercher libelle exite ====================================
 libelleExiste() {
 
@@ -286,6 +336,8 @@ formData.append('photo', this.file, this.file.name);
 formData.append('articleConf', JSON.stringify(this.ArticleVenteFormGroup.value.articleConf));
 formData.append('marge_article', this.ArticleVenteFormGroup.value.marge_article);
 this.buttonAjouter.emit(formData);
+this.mode = false;
+
  }
   // ==============================submit=============================================================================
   onSubmit() {

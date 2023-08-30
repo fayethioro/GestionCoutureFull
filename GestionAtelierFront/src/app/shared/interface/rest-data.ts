@@ -1,6 +1,7 @@
 // import { AbstractInterface } from "./abstract-interface";
 import { Categories } from "src/app/categories.model";
 import { CommunInterfaceArticle } from "./commun-interface-article";
+import { FormArray } from "@angular/forms";
  
 export interface Article extends CommunInterfaceArticle {
    
@@ -37,6 +38,7 @@ export interface ArticleVente extends CommunInterfaceArticle {
   quantite_total: number;
   deleteButtonVisible? :boolean;
   articles: any[]
+  articleConf:FormArray
 
 }
 

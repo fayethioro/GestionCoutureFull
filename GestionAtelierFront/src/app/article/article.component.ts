@@ -42,8 +42,6 @@ export class ArticleComponent implements OnInit {
            
   mode!: boolean  ;
 
-  // valFormData : FormData = this.ajouterArticleEnfant.formData
-
   // =================================== Constructeur==========================================
 
   constructor(private artServ: ArticleuServiceService) {}

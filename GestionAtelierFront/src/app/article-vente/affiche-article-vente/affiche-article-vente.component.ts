@@ -12,6 +12,7 @@ export class AfficheArticleVenteComponent implements OnInit {
   @Input() links!: Links[];
 
   @Output() loadArticlesEvent = new EventEmitter<Object>();
+  @Output() editArticleEvent = new EventEmitter<ArticleVente>();
   @Output() deleteArticleEvent = new EventEmitter<number>();
 
 
@@ -80,5 +81,15 @@ onClickOk(article : ArticleVente) {
   
   this.deleteArticleEvent.emit(article.id)
  
+}
+
+// ========================== Edit =======================================================================
+onEditArticle(article: ArticleVente) {
+  console.log('article ajout',article);
+  this.modeAjout = true
+  console.log(this.modeAjout);
+
+  this.editArticleEvent.emit(article);
+  
 }
 }
