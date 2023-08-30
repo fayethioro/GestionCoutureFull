@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\CategoriesResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,6 +22,7 @@ class ArticleResource extends JsonResource
             'stock_total' =>$this->stock_total,
             'prix_total' => $this->prix_total,
             'categories_id' =>$this->categories_id,
+            'categorie' =>$this->categories,
             'categories_libelle' =>$this->categories->libelle,
             'photo' =>$this->photo
         ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\CategoriesResource;
 use App\Models\Article;
 use App\Models\ArticleArticleVente;
@@ -26,7 +27,7 @@ class ArticleVenteCollection extends ResourceCollection
             'success' => true,
             'data' => $this->collection,
             // 'articleVentes' => ArticleArticleVente::all(),
-            'articleConfection' => Article::all(),
+            'articleConfection' => ArticleResource::collection(Article::all()),
             'categoriesVente' => CategoriesResource::collection($categoriesVente),
             'categories' => CategoriesResource::collection($categoriesConfection),
            

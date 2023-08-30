@@ -35,6 +35,7 @@
                       placeholder="libelle"
                       value
                       formControlName="libelle"
+                      (input)="libelleExiste()"
                     />
                     <div
                       *ngIf="
@@ -49,6 +50,9 @@
                         Le libelle doit avoir au moins 3 caratéres
                       </small>
                     </div>
+                    <small *ngIf="libelleExiste()" class="text-danger w-75 text-center">
+                      Ce libelle existe deja? Voulez vous le mettre à jour
+                  </small>
                   </div>
                   <div class="form-group w-50">
                     <label for>Categorie</label>
@@ -85,6 +89,7 @@
                     <input
                       type="checkbox"
                       autocomplete="off"
+                      formControlName="promo"
                       (change)="checkPromo = !checkPromo"
                     />
                   </div>
@@ -98,6 +103,7 @@
                     <label for>Valeur</label>
                     <input
                       type="number"
+                      formControlName="valeur_promo"
                       class="form-control"
                       placeholder="ex:10"
                     />
@@ -216,34 +222,31 @@
                               </div>
                             </td>
                             <td class="d-flex justify-content-between">
-                              <button
+                              <input
                                 class="btn btn-info mb-1"
                                 (click)="addArticleV()"
-                                [disabled]="
-                                  i !== articleConf.length - 1 ||
-                                  article.get('libelles')!.invalid ||
-                                  article.get('quantites')!.invalid
-                                "
-                              >
+                                [disabled]="i !== articleConf.length - 1 ||article.get('libelles')!.invalid ||
+                                  article.get('quantites')!.invalid">
                                 <i
                                   class="fa-solid fa-plus"
                                   style="color: white"
                                 ></i>
-                              </button>
+                              
                               <button
-                                class="btn btn-danger mb-1"
+                                class="btn  btn-danger mb-1"
                                 (click)="removeItem(i)"
                                 [disabled]="i !== articleConf.length - 1"
                               >
-                                <i
-                                  class="fa-solid fa-trash"
-                                  style="color: white"
-                                ></i>
+                                <span ><i class="fa-solid fa-delete-left"></i></span>
                               </button>
                             </td>
                           </tr>
                         </tbody>
                       </table>
+                      <div class="text-danger">
+                        <small *ngIf="errorMessageFormArray" class="text-danger w-75">{{errorMessageFormArray}}
+                        </small>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -12,6 +12,8 @@
     *ngIf="dataLoaded"
     [categoriesVente]="categoriesVente"
     [newArticleConfection]="newArticleConfection"
+    [listeArticles]="listeArticles"
+    (buttonAjouter)="handleFormSubmit($event)"
   >
   </app-ajout-article-vente>
   <app-affiche-article-vente

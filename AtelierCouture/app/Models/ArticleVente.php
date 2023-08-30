@@ -49,7 +49,9 @@ class ArticleVente extends Model
 
             $marge = request()->input('marge_article');
 
-            $articles = request()->input('articleConf');
+            $articleConfArray = request()->input('articleConf');
+
+            $articles = json_decode($articleConfArray, true);
             $totalCoutFabrication = 0;
 
             foreach ($articles as $article) {
@@ -59,7 +61,7 @@ class ArticleVente extends Model
                 $article = Article::find($articleId);
                 $totalCoutFabrication += ($quantite * $article->prix_total);
 
-                $articleVente->articles()->attach($articleId, ['quantites' => $quantite]);
+                $articleVente->articles()->attach($articleId, ['quantite' => $quantite]);
             }
 
             $articleVente->update([

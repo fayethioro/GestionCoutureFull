@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\ArticleVente;
 use App\Models\Categories;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ArtcleVenteResource;
 use App\Http\Resources\ArticleVenteCollection;
 use App\Http\Requests\StoreArticleVenteRequest;
 use App\Http\Requests\UpdateArticleVenteRequest;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Webmozart\Assert\InvalidArgumentException;
+
 
 
 class ArticleVenteController extends Controller
@@ -58,54 +60,72 @@ class ArticleVenteController extends Controller
      */
     public function store(StoreArticleVenteRequest $request)
     {
-        DB::beginTransaction();
-
-        try {
-
-            $requiredCategories = ['tissu', 'bouton', 'fil'];
-            $selectedCategories = [];
-
-            foreach ($request->input('articleConf') as $articleData) {
-                $article = Article::find($articleData['id']);
-                if ($article) {
-                    $selectedCategories[] = $article->categories->libelle;
-                }
-            }
-
-            $allElementsInSelectedCategories = collect($requiredCategories)->every(function ($item) use ($selectedCategories) {
-                return in_array($item, $selectedCategories);
-            });
-
-            if (!$allElementsInSelectedCategories) {
+        return DB::transaction(function () use ($request) {
+            $articleConfArray = $request->input('articleConf');
+            $articles = json_decode($articleConfArray, true);
+            if (!$this->validateCategories($articles)) {
                 return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
             }
-
-            $marge = $request->input('marge_article');
-
-            $articleVente = ArticleVente::create([
-                'libelle' => $request->input('libelle'),
-                'reference' => $this->genererReference($request->input('libelle'), $request->input('categories_id')),
-                'categories_id' => $request->input('categories_id'),
-                'marge_article' => $marge,
-                'quantite_total' => 1000,
-                'valeur_promo' => $request->input('valeur_promo'),
-                'promo' => $request->input('promo'),
-                'cout_fabrication' => 0,
-                'prix_vente' => 0,
-            ]);
+    
+            $articleVente = $this->createArticleVente($request);
             $articleVente->uploadPhoto($request->file('photo'));
             $articleVente->save();
-            DB::commit();
-
+    
             return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json(['message' => 'Une erreur s\'est produite lors de la création de l\'ArticleVente.'.$e->getMessage()], 500);
+        }, 5); 
+    }
+    /**
+     * Summary of validateCategories
+     * @param mixed $articleConf
+     * @return bool
+     * Fonction pour valider les catégories
+     */
+    private function validateCategories($articleConf)
+    {
+        $requiredCategories = ['tissu', 'bouton', 'fil'];
+        $selectedCategories = [];
+
+        foreach ($articleConf as $articleData) {
+            $article = Article::find($articleData['id']);
+            if ($article) {
+                $selectedCategories[] = $article->categories->libelle;
+            }
         }
+
+        return collect($requiredCategories)->every(function ($item) use ($selectedCategories) {
+            return in_array($item, $selectedCategories);
+        });
+    }
+
+    
+    /**
+     * Summary of createArticleVente
+     * @param mixed $request
+     * @return mixed
+     * Fonction pour créer un article de vente
+     */
+    private function createArticleVente($request)
+    {
+        $marge = $request->input('marge_article');
+
+        return ArticleVente::create([
+            'libelle' => $request->input('libelle'),
+            'reference' => $this->genererReference($request->input('libelle'), $request->input('categories_id')),
+            'categories_id' => $request->input('categories_id'),
+            'marge_article' => $marge,
+            'quantite_total' => 1000,
+            'valeur_promo' => $request->input('valeur_promo'),
+            'promo' => $request->input('promo'),
+            'cout_fabrication' => 0,
+            'prix_vente' => 0,
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Summary of update
+     * @param \App\Http\Requests\UpdateArticleVenteRequest $request
+     * @param \App\Models\ArticleVente $articleVente
+     * @return void
      */
     public function update(UpdateArticleVenteRequest $request, ArticleVente $articleVente)
     {

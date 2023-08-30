@@ -1,4 +1,5 @@
 // import { AbstractInterface } from "./abstract-interface";
+import { Categories } from "src/app/categories.model";
 import { CommunInterfaceArticle } from "./commun-interface-article";
  
 export interface Article extends CommunInterfaceArticle {
@@ -10,6 +11,7 @@ export interface Article extends CommunInterfaceArticle {
     categories_libelle?:string 
     fournisseur_id? : number;
     deleteButtonVisible? :boolean
+    categorie:Categories
   }
 
   export interface Fournisseur{

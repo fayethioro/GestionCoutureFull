@@ -36,7 +36,7 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let art of newArticleVente let i = index">
-                                <td><img src="assets/images/noprofil.jpg" width="50" height="50" alt="">
+                                <td><img src="{{imageDirectoryPath}}/{{art.photo}} "width="50" height="50" alt="">
                                 </td>
                                 <td>{{art.libelle}} </td>
                                 <td>{{art.quantite_total}} </td>

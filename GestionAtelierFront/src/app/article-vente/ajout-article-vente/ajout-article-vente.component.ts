@@ -1,15 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
   FormBuilder,
-  FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { Categories } from 'src/app/categories.model';
-import { Article } from 'src/app/shared/interface/rest-data';
+import { Article, ArticleVente } from 'src/app/shared/interface/rest-data';
 
 @Component({
   selector: 'app-ajout-article-vente',
@@ -17,9 +16,16 @@ import { Article } from 'src/app/shared/interface/rest-data';
   styleUrls: ['./ajout-article-vente.component.css'],
 })
 export class AjoutArticleVenteComponent implements OnInit {
+  // ===================================== communication parent => enfant===========================================
   @Input() categoriesVente!: Categories[];
   @Input() newArticleConfection!: Article[];
+  @Input() listeArticles!: ArticleVente[];
 
+
+  // ===================================== communication enfant => parent===========================================
+  @Output() buttonAjouter = new EventEmitter<FormData>();
+
+// ======================================== Variable ===============================================================
   ArticleVenteFormGroup!: FormGroup;
 
   checkPromo: boolean = false;
@@ -28,11 +34,14 @@ export class AjoutArticleVenteComponent implements OnInit {
   resultats!: Article[];
   resul! : Article
 
+
+
   file!: File;
   
   profilePicSrc: string = 'assets/images/noprofil.jpg';
   selectedRowIndex: number | null = null; 
   errorMessage:string = '' ;
+  errorMessageFormArray:string = '' ;
 
   selectedCaterigoriesLibelle = '';
   caterigoriesLibelle: string = '';
@@ -40,20 +49,27 @@ export class AjoutArticleVenteComponent implements OnInit {
 
   deseabledQuantite :boolean = false
 
-  // ================================= Constructure ============================================
+  articleCategorie : string[] = []
+
+  allElementsInSelectedCategories! :boolean 
+  ArticleForm: any;
+
+  // ================================= Constructure =================================================================
   constructor(private fb: FormBuilder) {
     this.ArticleVenteFormGroup = this.fb.group({
       libelle: ['', [Validators.required, Validators.minLength(3)]],
       reference: [''],
       categories_id: ['', Validators.required],
+      promo:[''],
+      valeur_promo:[''],
       photo: [null, [Validators.pattern('^.+.(jpg|jpeg|png)$')]],
-      articleConf: this.fb.array([this.createArticleFormGroup()]),
+      articleConf: this.fb.array([]),
       cout_fabrication: [''],
       marge_article: ['', [Validators.required, this.margeArticleValidator.bind(this)]],
       prix_vente:['']
     });
   }
-   // ======================================= OnInit() ======================================
+   // ======================================= OnInit() ==========================================================
 
    ngOnInit(): void {
     this.ArticleVenteFormGroup.get('libelle')?.valueChanges.subscribe((libelle) => {
@@ -62,20 +78,12 @@ export class AjoutArticleVenteComponent implements OnInit {
     const selectElement = document.querySelector('select') as HTMLSelectElement;
     selectElement.addEventListener('change', (event) => {
       const caterigoriesLibelle = this.onSelectChange(event);
-      const occ = this.compterOccurrences(
-        this.newArticleConfection,
-        +caterigoriesLibelle[1]
-      );
-
-      this.updateReference(
-        this.ArticleVenteFormGroup.get('libelle')?.value,
-        caterigoriesLibelle[0],
-        occ
-      );
+      const occ = this.compterOccurrences(this.listeArticles,+caterigoriesLibelle[1]);
+      this.updateReference(this.ArticleVenteFormGroup.get('libelle')?.value,caterigoriesLibelle[0],occ);
     });
 
   }
-  // ============================== create formarray ===================
+  // ============================== create formarray =======================================================
   createArticleFormGroup(): FormGroup {
     return this.fb.group({
       id: [''],
@@ -86,20 +94,31 @@ export class AjoutArticleVenteComponent implements OnInit {
       ],
     });
   }
-  // ================= ajout et delete dns le formarray=====================
+  // ================= ajout et delete dns le formarray==============================================================
   addArticleV() {
     if (this.articleConf.valid) {
       this.articleConf.push(this.createArticleFormGroup());
-    this.resultats = [];
-
+      this.resultats = [];
+      this.errorMessage = ''
     }
   }
   removeItem(index: number) {
+  const quan = this.articleConf.at(index).get('quantites')?.value;
+
     this.articleConf.removeAt(index);
+
+    if (this.resul.prix_total) {
+      let prix = this.resul.prix_total * quan
+      this.coutFabrication -= prix
+    this.ArticleVenteFormGroup.patchValue({cout_fabrication : this.coutFabrication});
+    if (this.articleConf.length === 0) {
+    this.ArticleVenteFormGroup.patchValue({cout_fabrication : ""});
+    }
+    }
+    
   }
 
-  // ================== Validation personaliser==============================
-// ===================marge_article=================
+// ======================================marge_article===========================================================
 margeArticleValidator(control: AbstractControl): ValidationErrors | null {
   const marge = control.value;
   if (marge < 5000 || marge > (this.coutFabrication * 3)) {
@@ -107,7 +126,36 @@ margeArticleValidator(control: AbstractControl): ValidationErrors | null {
   }
   return null; 
 }
+// ====================================== Validation categorie article confection ===============================
 
+validationCategories(){
+  let requiredCategories: string[] = ['tissu', 'bouton', 'fil'];
+  this.articleCategorie.push(this.resul.categorie.libelle) 
+
+  const allElementsInSelected = requiredCategories.every(item =>
+    this.articleCategorie.includes(item)
+  );
+  if (allElementsInSelected) {
+     this.allElementsInSelectedCategories = true 
+  }
+  else{
+    this.allElementsInSelectedCategories = false
+  }
+}
+// =========================================  rechercher libelle exite ====================================
+libelleExiste() {
+
+  if (this.listeArticles) {
+    const articleExists = this.listeArticles.some(
+      (article) => article.libelle === this.ArticleVenteFormGroup.value.libelle
+    );
+    if (articleExists) {
+     return true;
+   }
+   return false;
+  }
+    return;
+ }
    // ==================================== Recu^perer le libelle du categorie selectionner ======================================
    onSelectChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
@@ -116,8 +164,8 @@ margeArticleValidator(control: AbstractControl): ValidationErrors | null {
     this.selectedCaterigoriesLibelle = selectedOption.innerHTML;
     return [this.selectedCaterigoriesLibelle, valeur];
   }
-  // =========================== Le nombre occurence d'un element dans un tableau =====================
-  compterOccurrences(tableau: Article[], elementCible: number): number {
+  // =========================== Le nombre occurence d'un element dans un tableau ==========================================
+  compterOccurrences(tableau: ArticleVente[], elementCible: number): number {
     return tableau.reduce((compteur, article) => {
       if (article.categories_id === elementCible) {
         compteur++;
@@ -125,13 +173,7 @@ margeArticleValidator(control: AbstractControl): ValidationErrors | null {
       return compteur;
     }, 0);
   }
-  // ==============================submit=======================================
-  onSubmit() {
-    console.log(this.ArticleVenteFormGroup.value);
-  }
-  
-
-  // =========================================================== Charger photo ==================
+  // =========================================================== Charger photo =================================================
   onFileChange(event: Event) {
     const filesTarget = event.target as HTMLInputElement;
 
@@ -177,13 +219,14 @@ selectResult(result: Article, index: number) {
   this.resul = result
   libellesControl!.setValue(result.libelle);
   idControl!.setValue(result.id);
+  this.validationCategories()
   this.deseabledQuantite = false
 
   this.resultats = [];
   this.showArticles = false;
   this.selectedRowIndex = null;
 }
-// ================================= Reference ==========================
+// ============================================== Reference ========================================================
 updateReference(libelle: string,caterigoriesLibelle?: string,varib?: number): void {
   const libellePrefixe = libelle.substring(0, 3);
   const categorieTexte = caterigoriesLibelle;
@@ -191,30 +234,25 @@ updateReference(libelle: string,caterigoriesLibelle?: string,varib?: number): vo
   const reference = `REF-${libellePrefixe}-${categorieTexte}-${X}`
   this.ArticleVenteFormGroup.patchValue({ reference: reference });
 }
-//======================== cout fabrication======================
-
+//============================================= cout fabrication====================================================
 chargementPrix(index:number,event:Event){
   const quan = this.articleConf.at(index).get('quantites')?.value;
 
   if (this.resul.prix_total) {
     let prix = this.resul.prix_total * quan
     this.coutFabrication += prix
-   console.log("cout =",this.coutFabrication);
   this.ArticleVenteFormGroup.patchValue({cout_fabrication : this.coutFabrication});
   }
 }
-// ========================== charger prix de vente=======================
+// ===================================================== charger prix de vente=========================================
 chargementPrixVente(){
  if (this.marge_article!.valid) {
    const quan = this.marge_article!.value;
    let prixVente = this.coutFabrication + quan
    this.ArticleVenteFormGroup.patchValue({prix_vente : prixVente});
  }
-
-
 }
-
-  // ======================= Les getters ==================================
+  // ========================================= Les getters ================================================================
 
   get libelle() {
     return this.ArticleVenteFormGroup.get('libelle');
@@ -232,4 +270,31 @@ chargementPrixVente(){
   get prix_vente() {
     return this.ArticleVenteFormGroup.get('prix_vente') ;
   }
+  // ================================ Methode add article vente =======================================================
+
+  addArticleVente(){
+    const formData = new FormData();
+
+formData.append('libelle', this.ArticleVenteFormGroup.value.libelle);
+formData.append('categories_id', this.ArticleVenteFormGroup.value.categories_id);
+if (!this.checkPromo) {formData.append('promo', '0');}
+else{
+  formData.append('promo', '1');
+  formData.append('valeur_promo', this.ArticleVenteFormGroup.value.valeur_promo);
+}
+formData.append('photo', this.file, this.file.name);
+formData.append('articleConf', JSON.stringify(this.ArticleVenteFormGroup.value.articleConf));
+formData.append('marge_article', this.ArticleVenteFormGroup.value.marge_article);
+this.buttonAjouter.emit(formData);
+ }
+  // ==============================submit=============================================================================
+  onSubmit() {
+    if (!this.allElementsInSelectedCategories) {
+        this.errorMessageFormArray = "L'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil."
+    }
+    else{
+      this.addArticleVente()
+    }
+  }
+  
 }
