@@ -69,34 +69,34 @@ class ArticleVente extends Model
                 'prix_vente' => $totalCoutFabrication + $marge
             ]);
         });
-      static::updated(function ($article_vente) {
-            $marge = request()->input('marge_article');
-            $articleConfArray = request()->input('articleConf');
-            $articles = json_decode($articleConfArray, true);
-            $articleQuantities = [];
-            $totalCoutFabrication = $article_vente->cout_fabrication;
 
-        
-            foreach ($articles as $article) {
-                $articleId = $article['id'];
-                $quantite = $article['quantites'];
-                $articleQuantities[$articleId] = ['quantite' => $quantite];
-                $article = Article::find($articleId);
-                $totalCoutFabrication += ($quantite * $article->prix_total);
-            }
-        
-            $article_vente->articles()->sync($articleQuantities);
-            $nouveauPrixVente = $totalCoutFabrication + $marge;
-            
-            $article_vente->update([
-                'cout_fabrication' => $totalCoutFabrication,
-                'prix_vente' => $nouveauPrixVente
-            ]);
-        });  
+        // static::updated(function ($articleVente) {
+        //     $articleVente->updateArticleRelationAndFields();
+        // });
         
 
         static::deleting(function ($article) {
             $article->articles()->detach(); 
         });
     }
+// public function updateArticleRelationAndFields()
+// {
+//     $articleIds = [];
+//     $totalCoutFabrication = 0;
+    
+//     foreach ($this->articles as $article) {
+//         $quantite = $article->pivot->quantite;
+//         $totalCoutFabrication += ($quantite * $article->prix_total);
+//         $articleIds[$article->id] = ['quantite' => $quantite];
+//     }
+
+//     $this->articles()->sync($articleIds);
+
+//     // Mettez à jour les champs cout_fabrication et prix_vente
+//     $this->update([
+//         'cout_fabrication' => $totalCoutFabrication,
+//         'prix_vente' => $totalCoutFabrication + $this->marge_article,
+//     ]);
+// }
+
 }

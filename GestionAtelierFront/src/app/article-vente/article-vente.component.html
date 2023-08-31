@@ -21,8 +21,8 @@
   <app-affiche-article-vente
     *ngIf="dataLoaded"
     [newArticleVente]="newArticleVente"
-    (loadArticlesEvent)="loadArticle($event)"
     [links]="links"
+    (loadArticlesEvent)="loadArticles($event)"
     (editArticleEvent)="onEditArticle($event)"
     (deleteArticleEvent)="handleDelete($event)"
   ></app-affiche-article-vente>

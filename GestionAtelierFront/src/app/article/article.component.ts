@@ -55,10 +55,8 @@ export class ArticleComponent implements OnInit {
   onEditArticle(article: Article) {
     console.log('article parent', article);
     this.mode = this.afficherArtcicleEnfant.modeAjout 
-     console.log("mon" , this.mode);
-     
     this.editedArticle = article;
-    console.log('dfghjkl', this.editedArticle);
+   
   }
   // ================================================= A afficher================================================
 
@@ -101,8 +99,8 @@ export class ArticleComponent implements OnInit {
         this.artServ.addArticle(article).subscribe({
           next: (response) => {
             console.log(response);
-            alert('ajout reussi');
             this.loadArticle({ page: '1', limit: '3' });
+            alert('ajout reussi');
             this.resetForm();
             this.ajouterArticleEnfant.mode= false;
           },

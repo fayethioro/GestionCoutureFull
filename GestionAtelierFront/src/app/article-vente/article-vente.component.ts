@@ -41,7 +41,7 @@ export class ArticleVenteComponent  implements OnInit {
   constructor(private artVenteService : ArticleVenteServiceService){}
 
   ngOnInit(): void {
-    this.loadArticle({ page: '1', limit: '3' });
+    this.loadArticles({ page: '1', limit: '3' });
     this.chargementArticle()
   }
 
@@ -59,7 +59,7 @@ export class ArticleVenteComponent  implements OnInit {
     });
   }
    
-  loadArticle(infos: { page?: string; limit?: string }) {
+  loadArticles(infos: { page?: string; limit?: string }) {
     this.artVenteService.allArticle(infos.page, infos.limit).subscribe({
       next: (response) => {
         console.log(response);
@@ -78,34 +78,51 @@ export class ArticleVenteComponent  implements OnInit {
   //================================== les donne venant de afficher pour editer==========================
   onEditArticle(article: ArticleVente) {
     this.mode = this.afficherArtcicleVenteEnfant.modeAjout 
-     console.log("mon" , this.mode);
     this.editedArticle = article;
-    console.log('dfghjkl', this.editedArticle);
   }
   // ================================== Recevoir les donne du formulaire et envoie au serveur ===========================================
 
   handleFormSubmit(article: FormData){
     if (this.ajouterArticleVenteEnfant) {
-      console.log(article);
-      
+      if (!this.editedArticle) {
         this.artVenteService.addArticle(article).subscribe({
           next: (response) => {
             console.log(response);
             alert('ajout reussi');
-            this.loadArticle({ page: '1', limit: '3' }); 
+            this.loadArticles({ page: '1', limit: '3' });
             this.resetForm();
             this.ajouterArticleVenteEnfant.mode= false;
-
           },
           error: (err) => {
             console.log('erreur', err);
           },
         });
+      } 
+      else {
+        if (this.editedArticle.id) {
+          this.artVenteService.updateArticleForm(this.editedArticle.id, article).subscribe({
+              next: (response) => {
+                console.log(response);
+                alert('mis a jour reussi');
+          console.log(this.loadArticles({ page: '1', limit: '3' }));
+
+                this.loadArticles({ page: '1', limit: '3' });
+                 this.resetForm()
+                this.ajouterArticleVenteEnfant.mode= false;
+              },
+              error: (err) => {
+                console.log('erreur', err);
+              },
+            });
+        }
+      }
       
     }
   }
   // ====================================== Reset form=============================================================
   resetForm(){
+    this.loadArticles({ page: '1', limit: '3' });
+
     this.ajouterArticleVenteEnfant.ArticleVenteFormGroup.reset();
     this.ajouterArticleVenteEnfant.articleConf.reset()
     this.ajouterArticleVenteEnfant.profilePicSrc = 'assets/images/noprofil.jpg';
@@ -122,7 +139,9 @@ export class ArticleVenteComponent  implements OnInit {
         next: (response) => {
           console.log(response);
           alert('suppression reussi ');
-          this.loadArticle({ page: '1', limit: '3' });
+          this.loadArticles({ page: '1', limit: '3' });
+          console.log(this.loadArticles({ page: '1', limit: '3' }));
+          
         },
         error: (err) => {
           console.log('erreur', err);

@@ -22,15 +22,13 @@ class UpdateArticleVenteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle' => 'sometimes|required|string|min:3',
-            'reference' => 'sometimes|string|max:255',
+            'libelle' => 'sometimes|required|string|min:3||unique:article_ventes',
             'photo' => 'sometimes|image|mimes:jpeg,png,jpg', 
-            'quantite_total' => 'sometimes|numeric|min:1',
-            'cout_fabrication' => 'sometimes|numeric|min:1',
-            'marge_article' => 'sometimes|numeric|min:5000',
-            'prix_vente' => 'sometimes|numeric|min:1',
+            'categories_id' => 'sometimes|required|exists:categories,id',
+            'marge_article' => 'sometimes|required|numeric|min:5000|max:1000000',
             'promo' => 'sometimes|boolean',
             'valeur_promo' => 'sometimes|numeric',
+            'articleConf'=>'sometimes|required'
         ];
     }
 }

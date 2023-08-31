@@ -266,7 +266,6 @@ export class AjouterArticleComponent implements OnInit, OnChanges {
       return;
     }
     if (!this.editedArticle) {
-      // console.log("edi",this.editedArticle);
       this.mode = false;
       console.log(this.mode);
       

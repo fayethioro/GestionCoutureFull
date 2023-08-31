@@ -127,29 +127,95 @@ class ArticleVenteController extends Controller
      * @param \App\Models\ArticleVente $articleVente
      * @return void
 //      */
-    public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente)
+//     public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente)
+// {
+
+//     return DB::transaction(function () use ($request, $article_vente) {
+//         $articleConfArray = $request->input('articleConf');
+//             $articles = json_decode($articleConfArray, true);
+//         if (!$this->validateCategories($articles)) {
+//             return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
+//         }
+        
+//         $updateData= [
+//             'libelle' => $request->input('libelle', $article_vente->libelle),
+//             'categories_id' => $request->input('categories_id' , $article_vente->categories_id),
+//             'marge_article' => $request->input('marge_article' , $article_vente->marge_article),
+//             'valeur_promo' => $request->input('valeur_promo', $article_vente->valeur_promo),
+//             'promo' => $request->input('promo' , $article_vente->promo),
+//             'cout_fabrication' => $article_vente->cout_fabrication,
+//             'prix_vente' => $article_vente->prix_vente,
+//         ];
+        
+//         if ($request->hasFile('photo')) {
+//             $photo = $request->file('photo');
+//             $article_vente->uploadPhoto($photo);
+//             $updateData['photo'] = $article_vente->photo;
+//         }
+//         $article_vente->update($updateData);
+//         return (new ArtcleVenteResource($article_vente))->withMessage("Mise à jour réussie");
+//     }, 5); 
+// }
+
+public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente)
 {
     return DB::transaction(function () use ($request, $article_vente) {
         $articleConfArray = $request->input('articleConf');
-            $articles = json_decode($articleConfArray, true);
-        
+        $articles = json_decode($articleConfArray, true);
+
         if (!$this->validateCategories($articles)) {
             return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
         }
-        
-        // Mise à jour des propriétés de l'article de vente
-        $article_vente->update([
-            'libelle' => $request->input('libelle'),
-            'categories_id' => $request->input('categories_id'),
-            'marge_article' => $request->input('marge_article'),
-            'valeur_promo' => $request->input('valeur_promo'),
-            'promo' => $request->input('promo'),
-        ]);
+
+        $updateData = $this->getUpdateData($request, $article_vente);
+        $this->updateArticleVente($request,$article_vente, $updateData);
+        $this->updateArticleRelation($article_vente, $articles);
+
         return (new ArtcleVenteResource($article_vente))->withMessage("Mise à jour réussie");
-    }, 5); 
+    }, 5);
 }
 
+private function getUpdateData($request, $article_vente)
+{
+    return [
+        'libelle' => $request->input('libelle', $article_vente->libelle),
+        'categories_id' => $request->input('categories_id', $article_vente->categories_id),
+        'marge_article' => $request->input('marge_article', $article_vente->marge_article),
+        'valeur_promo' => $request->input('valeur_promo', $article_vente->valeur_promo),
+        'promo' => $request->input('promo', $article_vente->promo),
+    ];
+}
 
+private function updateArticleVente($request , $article_vente, $updateData)
+{
+    if ($request->hasFile('photo')) {
+        $photo = $request->file('photo');
+        $article_vente->uploadPhoto($photo);
+        $updateData['photo'] = $article_vente->photo;
+    }
+    
+    $article_vente->update($updateData);
+}
+
+private function updateArticleRelation($article_vente, $articles)
+{
+    $articleIds = [];
+    $totalCoutFabrication = 0;
+    
+    foreach ($articles as $article) {
+        $articleId = $article['id'];
+        $quantite = $article['quantites'];
+        $article = Article::find($articleId);
+        $totalCoutFabrication += ($quantite * $article->prix_total);
+        $articleIds[$articleId] = ['quantite' => $quantite];
+    }
+
+    $article_vente->articles()->sync($articleIds);
+    $article_vente->update([
+        'cout_fabrication' => $totalCoutFabrication,
+        'prix_vente' => $totalCoutFabrication + $article_vente->marge_article,
+    ]);
+}
     /**
      * Remove the specified resource from storage.
      */
