@@ -93,7 +93,6 @@ class ArticleVenteController extends Controller
                 $selectedCategories[] = $libelle;
             }
         }
-
         return collect($requiredCategories)->every(function ($item) use ($selectedCategories) {
             return in_array($item, $selectedCategories);
         });

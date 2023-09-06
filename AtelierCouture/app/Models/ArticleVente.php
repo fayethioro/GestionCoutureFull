@@ -70,33 +70,8 @@ class ArticleVente extends Model
             ]);
         });
 
-        // static::updated(function ($articleVente) {
-        //     $articleVente->updateArticleRelationAndFields();
-        // });
-        
-
         static::deleting(function ($article) {
             $article->articles()->detach(); 
         });
     }
-// public function updateArticleRelationAndFields()
-// {
-//     $articleIds = [];
-//     $totalCoutFabrication = 0;
-    
-//     foreach ($this->articles as $article) {
-//         $quantite = $article->pivot->quantite;
-//         $totalCoutFabrication += ($quantite * $article->prix_total);
-//         $articleIds[$article->id] = ['quantite' => $quantite];
-//     }
-
-//     $this->articles()->sync($articleIds);
-
-//     // Mettez à jour les champs cout_fabrication et prix_vente
-//     $this->update([
-//         'cout_fabrication' => $totalCoutFabrication,
-//         'prix_vente' => $totalCoutFabrication + $this->marge_article,
-//     ]);
-// }
-
 }

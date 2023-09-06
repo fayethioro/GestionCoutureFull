@@ -3,10 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Resources\FournisseurResource;
-use App\Models\Approvisionnement;
 use App\Models\ArticleFournisseur;
-use Illuminate\Http\Request;
-// use App\Http\Resources\StoreFournisseurResource;
 use App\Models\Categories;
 use App\Models\Fournisseur;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -27,10 +24,7 @@ class ArticleCollection extends ResourceCollection
             'data' => $this->collection,
             'fournisseurs' => FournisseurResource::collection(Fournisseur::all()),
             'categories' => CategoriesResource::collection($categories),
-            'approvisionnement' => ArticleFournisseur::all()
-
-          
-                
+            'approvisionnement' => ArticleFournisseur::all()      
         ];
     }
     /**
