@@ -20,10 +20,14 @@
   </app-ajout-article-vente>
   <app-affiche-article-vente
     *ngIf="dataLoaded"
+    [categoriesVente]="categoriesVente"
     [newArticleVente]="newArticleVente"
+    [newArticleConfection]="newArticleConfection"
     [links]="links"
+    [listeArticles]="listeArticles"
     (loadArticlesEvent)="loadArticles($event)"
     (editArticleEvent)="onEditArticle($event)"
     (deleteArticleEvent)="handleDelete($event)"
+    (selectedValueChange)="onSelectedValueChange($event)"
   ></app-affiche-article-vente>
 </section>

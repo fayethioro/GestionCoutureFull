@@ -1,6 +1,7 @@
 import { CategoriesServiceService } from '../categories-service.service';
 import { Categories } from '../categories.model';
 import { Component } from "@angular/core";
+import { ToastrService } from 'ngx-toastr';
 
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 
@@ -34,7 +35,7 @@ export class CategoriesComponent {
 
   checkAll = false
 
-  constructor(private _categoriesservice: CategoriesServiceService,private fb: FormBuilder) {
+  constructor(private _categoriesservice: CategoriesServiceService,private fb: FormBuilder,private toastr: ToastrService) {
     this.categorieForm = this.fb.group({
       libelle: this.fb.control("", [Validators.required,Validators.minLength(3)]),
      type_categorie: this.fb.control("", [Validators.required]),
@@ -46,6 +47,13 @@ export class CategoriesComponent {
     this.loadCategories();
   }
 
+  showSuccess() {
+    this.toastr.success('Opération réussie !', 'Succès');
+  }
+
+  showError() {
+    this.toastr.error('Une erreur est survenue.', 'Erreur');
+  }
 
 
   loadCategories(): void {
@@ -85,12 +93,13 @@ export class CategoriesComponent {
   addCategorie() {
     const libelleValue = this.categorieForm.value.libelle;
     this._categoriesservice.addCategorieForm(this.categorieForm.value).subscribe(Response => {
-          alert("Categorie ajouter avec succes")
+      this.toastr.success("Catégorie ajoutée avec succès", "Succès");
           this.categorieForm.get('libelle')!.setValue("");
           this.loadCategories()
     },
       error => {
-        this.errorMessage = error.error.message
+       this.errorMessage = error.error.message;
+      this.toastr.error("Une erreur est survenue lors de l'ajout de la catégorie", "Erreur");  
       }
     );
   }

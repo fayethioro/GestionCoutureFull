@@ -8,19 +8,31 @@
                 <div class="panel-heading">
 
                     <div class="row">
-                        <div class="col-sm-12 col-xs-12">
+                        <div class="col-sm-12 col-xs-12 d-flex justify-content-between">
                             <span class="fs-3 text-white">Liste des Articles</span>
-                            <form class="form-horizontal pull-right">
-                                <div class="form-group">
-                                    <label>items : </label>
-                                    <select class="form-control">
-                                        <option>5</option>
-                                        <option>10</option>
-                                        <option>15</option>
-                                        <option>20</option>
-                                    </select>
-                                </div>
-                            </form>
+
+                            <div class="mb-1 d-flex .form-group form-horizontal"
+                                style="background: white;  border-radius: 10px; height: 40px;">
+                                <select class="selection" style="background: white " [(ngModel)]="selectedCategory"
+                                (ngModelChange)="updateFilteredArticles()">
+                                    <option disabled selected value="">categories</option>
+                                    <option *ngFor="let cate of newArticleConfection " value=" {{ cate.id }}"> {{
+                                        cate.libelle }}</option>
+                                </select>
+                                <input type="text" class="form-control" id="searchInput" placeholder="recherche"
+                                    [(ngModel)]="searchTerm">
+
+                            </div>
+
+                            <div class="form-group form-horizontal">
+                                <label>items par page : </label>
+                                <select class="form-control" (change)="limitItemPage($event)"> >
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -29,36 +41,55 @@
                         <thead>
                             <tr>
                                 <th>photo</th>
-                                <th>libelle</th>
-                                <th>Qte Stock</th>
-                                <th class="text-center">Article confections</th>
+                                <th (click)="sort()">
+                                    libelle
+                                    <i class="fa fa-sort"></i>
+                                </th>
+
+                                <th>Qte Stock <i class="fa fa-sort"></i> </th>
+                                <th>Article confections <i class="fa fa-sort"></i> </th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let art of newArticleVente let i = index">
-                                <td><img src="{{imageDirectoryPath}}/{{art.photo}} "width="50" height="50" alt="">
-                                </td>
-                                <td>{{art.libelle}} </td>
-                                <td>{{art.quantite_total}} </td>
-                                <td *ngFor="let arti of art.articles" style="border: solid 1px;">
-                                    {{arti.libelle}}-{{arti.quantite}}
-                                </td>
-                                <td>
-                                    <ul class="action-list">
-                                        <div class="d-flex justify-content-center gap-3">
-                                            <li> <button class="btn btn-info" (click)="onEditArticle(art)">Edit</button></li>
-                                            <li (click)="toggleButtons(i)" [hidden]="art.deleteButtonVisible">
-                                                <button class="btn btn-danger">Delete</button>
-                                            </li>
-                                            <li class="OK" [hidden]="!art.deleteButtonVisible" (click)="onClickOk(art)">
-                                                <button class="btn btn-success">Ok (<span>{{ countdown
-                                                        }}</span>)</button></li>
-                                        </div>
-                                    </ul>
-                                </td>
-                            </tr>
+                            <ng-container>
+                                <tr
+                                    *ngFor="let art of newArticleVente | orderBy: sortingOrder | filterBy: ['libelle']:searchTerm; let i = index ">
+                                    <td><img src="{{imageDirectoryPath}}/{{art.photo}} " width="50" height="50" alt="">
+                                    </td>
+                                    <td>{{art.libelle}}</td>
+                                    <td>{{art.quantite_total}} </td>
+                                    <td>
+                                        <span *ngFor="let arti of art.articles ">
+                                            {{arti.libelle}}-{{arti.quantite}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <ul class="action-list">
+                                            <div class="d-flex justify-content-center gap-3">
+                                                <li> <button class="btn btn-info"
+                                                        (click)="onEditArticle(art)">Edit</button>
+                                                </li>
+                                                <li (click)="toggleButtons(i)" [hidden]="art.deleteButtonVisible">
+                                                    <button class="btn btn-danger">Delete</button>
+                                                </li>
+                                                <li class="OK" [hidden]="!art.deleteButtonVisible"
+                                                    (click)="onClickOk(art)">
+                                                    <button class="btn btn-success">Ok (<span>{{ countdown
+                                                            }}</span>)</button>
+                                                </li>
+                                            </div>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                            <!-- recherche -->
+
                         </tbody>
                     </table>
+
+
+
                 </div>
                 <div class="panel-footer">
                     <div class="row">
@@ -67,7 +98,7 @@
                                 <ul class="pagination">
                                     <li *ngFor="let link of links">
                                         <span [innerHTML]="link.label" class="{{link.active ? 'bg-primary' : ''}}"
-                                            (click)="loadArticles({page : link.label , limit : '3'})">
+                                            (click)="loadArticles({page : link.label , limit : '5'})">
                                         </span>
                                     </li>
 

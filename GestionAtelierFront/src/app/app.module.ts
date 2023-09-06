@@ -2,6 +2,10 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule} from '@angular/common/http';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgPipesModule } from 'ngx-pipes';
+
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -18,6 +22,8 @@ import { AfficheArticleVenteComponent } from './article-vente/affiche-article-ve
 
 
 
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,14 +35,21 @@ import { AfficheArticleVenteComponent } from './article-vente/affiche-article-ve
     HomeComponent,
     AjoutArticleVenteComponent,
     AfficheArticleVenteComponent,
+   
+   
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
+    HttpClientModule, 
     NgxPaginationModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
+    NgPipesModule,
+   
+    
   ],
   providers: [],
   bootstrap: [AppComponent]

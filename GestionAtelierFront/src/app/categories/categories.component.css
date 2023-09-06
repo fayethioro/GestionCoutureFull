@@ -1,4 +1,4 @@
-
+@import "~ngx-toastr/toastr";
 
 td{
   cursor: pointer;
@@ -12,7 +12,11 @@ td{
   pointer-events: none; 
 }
 
-
+.custom-success-toast {
+  background-color: #4c54af; /* Couleur de fond personnalisée */
+  color: white; 
+  position: absolute;/* Couleur du texte personnalisée */
+}
 
 
 

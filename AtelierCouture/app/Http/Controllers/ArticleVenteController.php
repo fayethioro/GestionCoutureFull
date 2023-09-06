@@ -20,6 +20,12 @@ class ArticleVenteController extends Controller
 {
     /**
      * Display a listing of the resource.
+     */    
+    /**
+     * paginationArticle
+     *
+     * @param  mixed $request
+     * @return ArticleVenteCollection
      */
     public function paginationArticle(Request $request): ArticleVenteCollection
     {
@@ -33,12 +39,6 @@ class ArticleVenteController extends Controller
         }
         return (new ArticleVenteCollection(ArticleVente::all()))->withMessage("Liste des articles");
     }
-
-
-
-
-
-
     protected function genererReference($libelle, $categorieId): string
     {
         $categorie = Categories::find($categorieId);
@@ -59,21 +59,22 @@ class ArticleVenteController extends Controller
      * @return ArtcleVenteResource
      */
     public function store(StoreArticleVenteRequest $request)
-    {
-        return DB::transaction(function () use ($request) {
-            $articleConfArray = $request->input('articleConf');
-            $articles = json_decode($articleConfArray, true);
-            if (!$this->validateCategories($articles)) {
-                return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
-            }
-    
-            $articleVente = $this->createArticleVente($request);
-            $articleVente->uploadPhoto($request->file('photo'));
-            $articleVente->save();
-    
-            return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
-        }, 5); 
-    }
+{
+    return DB::transaction(function () use ($request) {
+        $articleConfArray = $request->input('articleConf');
+        $articles = json_decode($articleConfArray, true);
+        if (!$this->validateCategories($articles)) {
+            return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
+        }
+
+        $articleVente = $this->createArticleVente($request);
+        $articleVente->uploadPhoto($request->file('photo'));
+        $articleVente->save();
+        return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
+
+    }, 5);
+}
+
     /**
      * Summary of validateCategories
      * @param mixed $articleConf
@@ -81,21 +82,24 @@ class ArticleVenteController extends Controller
      * Fonction pour valider les catégories
      */
     private function validateCategories($articleConf)
-    {
-        $requiredCategories = ['tissu', 'bouton', 'fil'];
-        $selectedCategories = [];
+{
+    $requiredCategories = ['tissu', 'bouton', 'fil'];
+    $selectedCategories = [];
 
-        foreach ($articleConf as $articleData) {
-            $article = Article::find($articleData['id']);
-            if ($article) {
-                $selectedCategories[] = $article->categories->libelle;
-            }
+    foreach ($articleConf as $articleData) {
+        $article = Article::find($articleData['id']);
+        if ($article) {
+            $libelle = strtolower($article->categories->libelle);
+            $libelle = rtrim($libelle, 's');
+            $selectedCategories[] = $libelle;
         }
-
-        return collect($requiredCategories)->every(function ($item) use ($selectedCategories) {
-            return in_array($item, $selectedCategories);
-        });
     }
+
+    return collect($requiredCategories)->every(function ($item) use ($selectedCategories) {
+        return in_array($item, $selectedCategories);
+    });
+}
+
 
     
     /**
@@ -126,38 +130,9 @@ class ArticleVenteController extends Controller
      * @param \App\Http\Requests\UpdateArticleVenteRequest $request
      * @param \App\Models\ArticleVente $articleVente
      * @return void
-//      */
-//     public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente)
-// {
+     */
 
-//     return DB::transaction(function () use ($request, $article_vente) {
-//         $articleConfArray = $request->input('articleConf');
-//             $articles = json_decode($articleConfArray, true);
-//         if (!$this->validateCategories($articles)) {
-//             return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
-//         }
-        
-//         $updateData= [
-//             'libelle' => $request->input('libelle', $article_vente->libelle),
-//             'categories_id' => $request->input('categories_id' , $article_vente->categories_id),
-//             'marge_article' => $request->input('marge_article' , $article_vente->marge_article),
-//             'valeur_promo' => $request->input('valeur_promo', $article_vente->valeur_promo),
-//             'promo' => $request->input('promo' , $article_vente->promo),
-//             'cout_fabrication' => $article_vente->cout_fabrication,
-//             'prix_vente' => $article_vente->prix_vente,
-//         ];
-        
-//         if ($request->hasFile('photo')) {
-//             $photo = $request->file('photo');
-//             $article_vente->uploadPhoto($photo);
-//             $updateData['photo'] = $article_vente->photo;
-//         }
-//         $article_vente->update($updateData);
-//         return (new ArtcleVenteResource($article_vente))->withMessage("Mise à jour réussie");
-//     }, 5); 
-// }
-
-public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente)
+public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente):ArtcleVenteResource
 {
     return DB::transaction(function () use ($request, $article_vente) {
         $articleConfArray = $request->input('articleConf');
