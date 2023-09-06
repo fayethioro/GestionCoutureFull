@@ -20,7 +20,7 @@ class ArticleVenteController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */    
+     */
     /**
      * paginationArticle
      *
@@ -59,21 +59,20 @@ class ArticleVenteController extends Controller
      * @return ArtcleVenteResource
      */
     public function store(StoreArticleVenteRequest $request)
-{
-    return DB::transaction(function () use ($request) {
-        $articleConfArray = $request->input('articleConf');
-        $articles = json_decode($articleConfArray, true);
-        if (!$this->validateCategories($articles)) {
-            return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
-        }
+    {
+        return DB::transaction(function () use ($request) {
+            $articleConfArray = $request->input('articleConf');
+            $articles = json_decode($articleConfArray, true);
+            if (!$this->validateCategories($articles)) {
+                return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
+            }
 
-        $articleVente = $this->createArticleVente($request);
-        $articleVente->uploadPhoto($request->file('photo'));
-        $articleVente->save();
-        return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
-
-    }, 5);
-}
+            $articleVente = $this->createArticleVente($request);
+            $articleVente->uploadPhoto($request->file('photo'));
+            $articleVente->save();
+            return (new ArtcleVenteResource($articleVente))->withMessage("Ajout réussi");
+        }, 5);
+    }
 
     /**
      * Summary of validateCategories
@@ -82,26 +81,26 @@ class ArticleVenteController extends Controller
      * Fonction pour valider les catégories
      */
     private function validateCategories($articleConf)
-{
-    $requiredCategories = ['tissu', 'bouton', 'fil'];
-    $selectedCategories = [];
+    {
+        $requiredCategories = ['tissu', 'bouton', 'fil'];
+        $selectedCategories = [];
 
-    foreach ($articleConf as $articleData) {
-        $article = Article::find($articleData['id']);
-        if ($article) {
-            $libelle = strtolower($article->categories->libelle);
-            $libelle = rtrim($libelle, 's');
-            $selectedCategories[] = $libelle;
+        foreach ($articleConf as $articleData) {
+            $article = Article::find($articleData['id']);
+            if ($article) {
+                $libelle = strtolower($article->categories->libelle);
+                $libelle = rtrim($libelle, 's');
+                $selectedCategories[] = $libelle;
+            }
         }
+
+        return collect($requiredCategories)->every(function ($item) use ($selectedCategories) {
+            return in_array($item, $selectedCategories);
+        });
     }
 
-    return collect($requiredCategories)->every(function ($item) use ($selectedCategories) {
-        return in_array($item, $selectedCategories);
-    });
-}
 
 
-    
     /**
      * Summary of createArticleVente
      * @param mixed $request
@@ -132,65 +131,65 @@ class ArticleVenteController extends Controller
      * @return void
      */
 
-public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente):ArtcleVenteResource
-{
-    return DB::transaction(function () use ($request, $article_vente) {
-        $articleConfArray = $request->input('articleConf');
-        $articles = json_decode($articleConfArray, true);
+    public function update(UpdateArticleVenteRequest $request, ArticleVente $article_vente): ArtcleVenteResource
+    {
+        return DB::transaction(function () use ($request, $article_vente) {
+            $articleConfArray = $request->input('articleConf');
+            $articles = json_decode($articleConfArray, true);
 
-        if (!$this->validateCategories($articles)) {
-            return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
+            if (!$this->validateCategories($articles)) {
+                return response()->json(['message' => 'L\'ArticleVente doit contenir au moins trois articles des catégories Tissu, bouton et fil.'], 400);
+            }
+
+            $updateData = $this->getUpdateData($request, $article_vente);
+            $this->updateArticleVente($request, $article_vente, $updateData);
+            $this->updateArticleRelation($article_vente, $articles);
+
+            return (new ArtcleVenteResource($article_vente))->withMessage("Mise à jour réussie");
+        }, 5);
+    }
+
+    private function getUpdateData($request, $article_vente)
+    {
+        return [
+            'libelle' => $request->input('libelle', $article_vente->libelle),
+            'categories_id' => $request->input('categories_id', $article_vente->categories_id),
+            'marge_article' => $request->input('marge_article', $article_vente->marge_article),
+            'valeur_promo' => $request->input('valeur_promo', $article_vente->valeur_promo),
+            'promo' => $request->input('promo', $article_vente->promo),
+        ];
+    }
+
+    private function updateArticleVente($request, $article_vente, $updateData)
+    {
+        if ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+            $article_vente->uploadPhoto($photo);
+            $updateData['photo'] = $article_vente->photo;
         }
 
-        $updateData = $this->getUpdateData($request, $article_vente);
-        $this->updateArticleVente($request,$article_vente, $updateData);
-        $this->updateArticleRelation($article_vente, $articles);
-
-        return (new ArtcleVenteResource($article_vente))->withMessage("Mise à jour réussie");
-    }, 5);
-}
-
-private function getUpdateData($request, $article_vente)
-{
-    return [
-        'libelle' => $request->input('libelle', $article_vente->libelle),
-        'categories_id' => $request->input('categories_id', $article_vente->categories_id),
-        'marge_article' => $request->input('marge_article', $article_vente->marge_article),
-        'valeur_promo' => $request->input('valeur_promo', $article_vente->valeur_promo),
-        'promo' => $request->input('promo', $article_vente->promo),
-    ];
-}
-
-private function updateArticleVente($request , $article_vente, $updateData)
-{
-    if ($request->hasFile('photo')) {
-        $photo = $request->file('photo');
-        $article_vente->uploadPhoto($photo);
-        $updateData['photo'] = $article_vente->photo;
-    }
-    
-    $article_vente->update($updateData);
-}
-
-private function updateArticleRelation($article_vente, $articles)
-{
-    $articleIds = [];
-    $totalCoutFabrication = 0;
-    
-    foreach ($articles as $article) {
-        $articleId = $article['id'];
-        $quantite = $article['quantites'];
-        $article = Article::find($articleId);
-        $totalCoutFabrication += ($quantite * $article->prix_total);
-        $articleIds[$articleId] = ['quantite' => $quantite];
+        $article_vente->update($updateData);
     }
 
-    $article_vente->articles()->sync($articleIds);
-    $article_vente->update([
-        'cout_fabrication' => $totalCoutFabrication,
-        'prix_vente' => $totalCoutFabrication + $article_vente->marge_article,
-    ]);
-}
+    private function updateArticleRelation($article_vente, $articles)
+    {
+        $articleIds = [];
+        $totalCoutFabrication = 0;
+
+        foreach ($articles as $article) {
+            $articleId = $article['id'];
+            $quantite = $article['quantites'];
+            $article = Article::find($articleId);
+            $totalCoutFabrication += ($quantite * $article->prix_total);
+            $articleIds[$articleId] = ['quantite' => $quantite];
+        }
+
+        $article_vente->articles()->sync($articleIds);
+        $article_vente->update([
+            'cout_fabrication' => $totalCoutFabrication,
+            'prix_vente' => $totalCoutFabrication + $article_vente->marge_article,
+        ]);
+    }
     /**
      * Remove the specified resource from storage.
      */
